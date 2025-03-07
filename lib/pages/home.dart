@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cultureconnect/tools/horList.dart';
+import 'package:cultureconnect/tools/button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,6 +10,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<String> cultureitems = ["Gujarat", "Rajasthan", "Sikh", "Jain"];
+  List<String> cultureimages = [
+    "assets/images/banner.png",
+    "assets/images/banner.png",
+    "assets/images/banner.png",
+    "assets/images/banner.png",
+  ];
+  List<Widget> culturepages = [PageOne(), PageTwo(), PageThree(), PageFour()];
+
+  List<String> festivalitems = ["Diwali", "EId", "Holi", "Christmas"];
+  List<String> festivalimages = [
+    "assets/images/banner.png",
+    "assets/images/banner.png",
+    "assets/images/banner.png",
+    "assets/images/banner.png",
+  ];
+  List<Widget> festivalpages = [PageOne(), PageTwo(), PageThree(), PageFour()];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +67,7 @@ class _HomePageState extends State<HomePage> {
             Padding(
                 padding: EdgeInsets.all(16),
                 child: Container(
-                  width: 200,
+                  width: 400,
                   height: 200,
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -59,14 +79,41 @@ class _HomePageState extends State<HomePage> {
 
             // Cultures Section
             _sectionTitle("Cultures"),
-            _horizontalScrollList(["Gujarat", "Odisha", "Chennai", "Mumbai"]),
+            horizontalScrollList(
+                cultureitems, cultureimages, culturepages, context),
 
             // Events & Festivals Section
             _sectionTitle("Upcoming Festivals"),
-            _horizontalScrollList(["Diwali", "Holi", "Navratri", "Pongal"]),
+            horizontalScrollList(
+                festivalitems, festivalimages, festivalpages, context),
 
             // Fun Fact
             _funFactCard(),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Button
+                CustomButton(
+                  text: "Encyclopedia",
+                  onPressed: () {
+                    print("Button Pressed!");
+                  },
+                  backgroundColor: Colors.purple,
+                  textColor: Colors.white,
+                  borderColor: Colors.black,
+                  borderRadius: 20.0,
+                  elevation: 15.0,
+                  width: 300.0,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
+                  icon: Icons.book,
+                  iconColor: Colors.white,
+                  iconSize: 28.0,
+                  isLoading: false, // Set to true to show loading
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -80,32 +127,6 @@ class _HomePageState extends State<HomePage> {
       child: Text(
         title,
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-
-  // Horizontal Scrollable List
-  Widget _horizontalScrollList(List<String> items) {
-    return SizedBox(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                width: 100,
-                color: Colors.white,
-                child: Center(
-                    child: Text(items[index],
-                        style: TextStyle(fontWeight: FontWeight.bold))),
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -128,19 +149,44 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  // BottomNavigationBarItem _navBarItem(IconData icon, String label, int index) {
-  //   return BottomNavigationBarItem(
-  //     icon: AnimatedContainer(
-  //       duration: Duration(milliseconds: 0),
-  //       curve: Curves.easeInOut,
-  //       padding: EdgeInsets.all(_selectedIndex == index ? 6.0 : 0.0),
-  //       decoration: BoxDecoration(
-  //         shape: BoxShape.circle,
-  //         color: _selectedIndex == index ? Colors.deepPurple.shade100 : Colors.transparent,
-  //       ),
-  //       child: Icon(icon),
-  //     ),
-  //     label: label,
-  //   );
-  // }
+}
+
+class PageOne extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Page One")),
+      body: Center(child: Text("Welcome to Page One!")),
+    );
+  }
+}
+
+class PageTwo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Page Two")),
+      body: Center(child: Text("Welcome to Page Two!")),
+    );
+  }
+}
+
+class PageThree extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Page One")),
+      body: Center(child: Text("Welcome to Page One!")),
+    );
+  }
+}
+
+class PageFour extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Page One")),
+      body: Center(child: Text("Welcome to Page One!")),
+    );
+  }
 }
