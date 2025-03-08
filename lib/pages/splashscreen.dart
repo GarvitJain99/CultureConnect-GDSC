@@ -37,15 +37,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 62, 30, 67),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             "CultureConnect",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
           ),
-          Image.asset('assets/images/banner.png', height: 100)
+          Image.asset('assets/images/logo.jpeg')
         ],
       )
     );
