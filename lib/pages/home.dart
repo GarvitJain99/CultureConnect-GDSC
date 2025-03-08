@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                 CustomButton(
                   text: "Encyclopedia",
                   onPressed: () {
-                    print("Button Pressed!");
+                    // print("Button Pressed!");
                   },
                   backgroundColor: Colors.purple,
                   textColor: Colors.white,
@@ -152,6 +152,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class PageOne extends StatelessWidget {
+  const PageOne({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,6 +164,8 @@ class PageOne extends StatelessWidget {
 }
 
 class PageTwo extends StatelessWidget {
+  const PageTwo({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,6 +176,8 @@ class PageTwo extends StatelessWidget {
 }
 
 class PageThree extends StatelessWidget {
+  const PageThree({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,6 +188,8 @@ class PageThree extends StatelessWidget {
 }
 
 class PageFour extends StatelessWidget {
+  const PageFour({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
