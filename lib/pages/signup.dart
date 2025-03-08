@@ -1,4 +1,5 @@
 import 'package:cultureconnect/pages/navbar.dart';
+import 'package:cultureconnect/pages/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -36,6 +37,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
             TextField(controller: passwordController, decoration: InputDecoration(labelText: "Password"), obscureText: true),
             SizedBox(height: 20),
             ElevatedButton(onPressed: signUp, child: Text("Sign Up")),
+            TextButton(
+              onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen())),
+              child: Text("Already have an account? Sign In"),
+            ),
           ],
         ),
       ),

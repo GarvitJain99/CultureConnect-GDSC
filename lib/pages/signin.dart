@@ -40,7 +40,7 @@ class _SignInScreenState extends State<SignInScreen> {
             SizedBox(height: 20),
             ElevatedButton(onPressed: signIn, child: Text("Sign In")),
             TextButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen())),
+              onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignUpScreen())),
               child: Text("Don't have an account? Sign Up"),
             ),
           ],
