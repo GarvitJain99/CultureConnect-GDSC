@@ -1,14 +1,15 @@
 import 'package:cultureconnect/pages/home.dart';
+import 'package:cultureconnect/pages/profile.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class NavBar extends StatefulWidget {
+  const NavBar({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _NavBarState createState() => _NavBarState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _NavBarState extends State<NavBar> {
   int _selectedIndex = 0;
 
   void _onNavItemTapped(int index) {
@@ -21,10 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomePage(),
     HomePage(),
     HomePage(),
-    HomePage(),
-    // CommunityPage(),
-    // MarketplacePage(),
-    // ProfilePage(),
+    ProfilePage(),
   ];
 
   @override
