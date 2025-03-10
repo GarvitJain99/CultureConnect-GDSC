@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cultureconnect/pages/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+ // Import the sign-in page
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -50,53 +52,53 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
   }
+
   Future<void> _pickImage() async {
-  if (Platform.isAndroid) {
-    // Request Camera Permission
-    if (!await Permission.camera.request().isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Camera permission is required.")),
-      );
-      return;
-    }
-
-    // Handle Storage Permission Based on Android Version
-    if (await Permission.photos.request().isDenied) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Photo library access is required.")),
-      );
-      return;
-    }
-
-    if (await Permission.mediaLibrary.request().isDenied) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Media library access is required.")),
-      );
-      return;
-    }
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text("Choose from Gallery"),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _getImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text("Take a Photo"),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _getImage(ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  // Pick an image from the gallery
-  final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  Future<void> _getImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
 
-  if (pickedFile != null) {
-    setState(() {
-      _imageFile = File(pickedFile.path);
-    });
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
 
-    // Upload the image
-    await _uploadProfileImage();
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("No image selected.")),
-   );
+      // Upload the image
+      await _uploadProfileImage();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No image selected.")),
+      );
+    }
   }
-}
-
-
-
-
- 
 
   Future<void> _uploadProfileImage() async {
     if (_imageFile == null || _user == null) return;
@@ -129,6 +131,18 @@ class _ProfilePageState extends State<ProfilePage> {
         .showSnackBar(SnackBar(content: Text("Profile Updated")));
   }
 
+  // *Logout Function*
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+
+    // Navigate to Sign-in Page and remove previous screens from the stack
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => SignInScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,13 +150,18 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: Text('CultureConnect'),
         backgroundColor: Colors.purple,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout, // *Logout Button*
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: Column(
             children: [
-              // Profile Image
               // Profile Image
               Stack(
                 alignment: Alignment.center,
@@ -235,7 +254,7 @@ class _ProfilePageState extends State<ProfilePage> {
               // Email (Read-only)
               TextField(
                 controller: TextEditingController(text: _email),
-                readOnly: true,
+                readOnly: true, // *Email is now non-editable*
                 decoration: InputDecoration(
                   labelText: "Email Address",
                   filled: true,
