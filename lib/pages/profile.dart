@@ -50,33 +50,53 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
   }
-
   Future<void> _pickImage() async {
-    // Request permissions
-    var cameraStatus = await Permission.camera.request();
-    var storageStatus = await Permission.storage.request();
-
-    // Check if permissions are granted
-    if (cameraStatus.isGranted && storageStatus.isGranted) {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        setState(() {
-          _imageFile = File(pickedFile.path);
-        });
-        await _uploadProfileImage();
-      }
-    } else if (cameraStatus.isPermanentlyDenied ||
-        storageStatus.isPermanentlyDenied) {
-      // Show settings dialog if permissions are permanently denied
-      openAppSettings();
-    } else {
+  if (Platform.isAndroid) {
+    // Request Camera Permission
+    if (!await Permission.camera.request().isGranted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                "Camera & Storage permissions are required to upload a profile picture.")),
+        SnackBar(content: Text("Camera permission is required.")),
       );
+      return;
+    }
+
+    // Handle Storage Permission Based on Android Version
+    if (await Permission.photos.request().isDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Photo library access is required.")),
+      );
+      return;
+    }
+
+    if (await Permission.mediaLibrary.request().isDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Media library access is required.")),
+      );
+      return;
     }
   }
+
+  // Pick an image from the gallery
+  final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedFile != null) {
+    setState(() {
+      _imageFile = File(pickedFile.path);
+    });
+
+    // Upload the image
+    await _uploadProfileImage();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("No image selected.")),
+   );
+  }
+}
+
+
+
+
+ 
 
   Future<void> _uploadProfileImage() async {
     if (_imageFile == null || _user == null) return;

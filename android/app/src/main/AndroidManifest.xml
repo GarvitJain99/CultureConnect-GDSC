@@ -1,6 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Add the required permissions here -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:label="CultureConnect"
         android:name="${applicationName}"
@@ -33,6 +39,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+
     <!-- Required to query activities that can process text -->
     <queries>
         <intent>
