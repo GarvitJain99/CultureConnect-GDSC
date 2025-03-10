@@ -1,3 +1,4 @@
+import 'package:cultureconnect/pages/region_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:cultureconnect/tools/horList.dart';
 import 'package:cultureconnect/tools/button.dart';
@@ -34,7 +35,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Color.fromARGB(255, 200, 126, 212),
       appBar: AppBar(
         title: Text("CultureConnect",
-            style: TextStyle(fontWeight: FontWeight.bold , color: Colors.white)),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -97,7 +98,13 @@ class _HomePageState extends State<HomePage> {
                 CustomButton(
                   text: "Encyclopedia",
                   onPressed: () {
-                    // print("Button Pressed!");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RegionSelectionPage()
+                      ),
+                    );
                   },
                   backgroundColor: Colors.purple,
                   textColor: Colors.white,
@@ -126,7 +133,8 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Text(
         title,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold ,  color: Colors.white),
+        style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
       ),
     );
   }
