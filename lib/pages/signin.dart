@@ -16,34 +16,43 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  bool isLoading = false; // NEW: Loading state
+  bool isLoading = false;
+  bool isPasswordVisible = false; // NEW: Password visibility toggle
 
   void signIn() async {
-    setState(() => isLoading = true); // Show loading indicator
+    setState(() => isLoading = true);
 
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: emailController.text,
-        password: passwordController.text,
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
 
       User? user = userCredential.user;
       if (user != null) {
-        // NEW: Fetch user data from Firestore
         DocumentSnapshot userDoc =
             await _firestore.collection('users').doc(user.uid).get();
 
         if (!userDoc.exists) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("User data not found! Please sign up again.")),
+            const SnackBar(content: Text("User data not found! Please sign up again.")),
           );
           return;
         }
 
-        // Navigate to home screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => NavBar()),
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 500),
+            pageBuilder: (_, __, ___) => const NavBar(),
+            transitionsBuilder: (_, anim, __, child) {
+              return SlideTransition(
+                position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
+                    .animate(anim),
+                child: child,
+              );
+            },
+          ),
         );
       }
     } on FirebaseAuthException catch (e) {
@@ -53,49 +62,77 @@ class _SignInScreenState extends State<SignInScreen> {
       } else if (e.code == 'wrong-password') {
         errorMessage = "Incorrect password.";
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: ${e.toString()}")),
       );
     } finally {
-      setState(() => isLoading = false); // Hide loading indicator
+      setState(() => isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Sign In")),
+      appBar: AppBar(title: const Text("Sign In")),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: emailController,
-              decoration: InputDecoration(labelText: "Email"),
+              decoration: const InputDecoration(
+                labelText: "Email",
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 16),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(labelText: "Password"),
-              obscureText: true,
+              obscureText: !isPasswordVisible,
+              decoration: InputDecoration(
+                labelText: "Password",
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () => setState(() => isPasswordVisible = !isPasswordVisible),
+                ),
+              ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             isLoading
-                ? CircularProgressIndicator() // NEW: Loading indicator
-                : ElevatedButton(onPressed: signIn, child: Text("Sign In")),
+                ? const Center(child: CircularProgressIndicator())
+                : ElevatedButton(
+                    onPressed: signIn,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: const Text("Sign In"),
+                  ),
             TextButton(
               onPressed: () => Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => SignUpScreen()),
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 500),
+                  pageBuilder: (_, __, ___) => const SignUpScreen(),
+                  transitionsBuilder: (_, anim, __, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero)
+                          .animate(anim),
+                      child: child,
+                    );
+                  },
+                ),
               ),
-              child: Text("Don't have an account? Sign Up"),
+              child: const Text("Don't have an account? Sign Up"),
             ),
           ],
         ),
       ),
-    );
+   );
   }
 }

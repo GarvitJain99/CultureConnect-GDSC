@@ -1,5 +1,5 @@
 import 'package:cultureconnect/pages/home.dart';
-import 'package:cultureconnect/pages/profile.dart';
+import 'package:cultureconnect/pages/viewprofile.dart';
 import 'package:flutter/material.dart';
 
 class NavBar extends StatefulWidget {
@@ -22,7 +22,7 @@ class _NavBarState extends State<NavBar> {
     HomePage(),
     HomePage(),
     HomePage(),
-    ProfilePage(),
+    ViewProfileScreen(),
   ];
 
   @override

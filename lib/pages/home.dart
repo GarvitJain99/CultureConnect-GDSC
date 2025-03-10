@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 62, 30, 67),
+      backgroundColor: Color.fromARGB(255, 200, 126, 212),
       appBar: AppBar(
         title: Text("CultureConnect",
             style: TextStyle(fontWeight: FontWeight.bold , color: Colors.white)),
