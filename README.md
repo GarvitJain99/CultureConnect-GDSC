@@ -1,16 +1,19 @@
-# CultureConnect
+# Culture Connect
 
-A new Flutter project.
+Culture Connect is a Flutter-based mobile application that fosters cultural exchange and interaction by connecting people with diverse cultural backgrounds. The app enables users to explore, share, and learn about various traditions, customs, and cultural practices worldwide.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- **User Profiles:** Create and manage profiles with cultural preferences.
+- **Community Interaction:** Engage with other users through chats and forums.
+- **Event Listings:** Discover cultural events and activities nearby.
+- **Language Exchange:** Learn and practice new languages with native speakers.
+- **Media Sharing:** Upload and explore cultural photos, videos, and stories.
 
-A few resources to get you started if this is your first Flutter project:
+## Tech Stack
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Frontend:** Flutter (Dart)
+- **Backend:** Firebase / Node.js
+- **Database:** Firestore / MongoDB (as per implementation)
+- **Authentication:** Firebase Authentication
+- **State Management:** Provider / Riverpod / Bloc (as per usage)
