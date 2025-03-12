@@ -6,31 +6,50 @@ class CultureSelectionPage extends StatelessWidget {
   CultureSelectionPage({super.key, required this.region});
 
   final Map<String, List<String>> cultures = {
-    "North": ["Jammu & Kashmir", "Uttar Pradesh", "Punjab","Himachal Pradesh","Harayana"],
-    "South": ["Tamil Nadu", "Kerala", "Karnataka"],
-    "North-East": ["Assam", "Meghalaya", "Nagaland"],
-    "West": ["Rajasthan", "Gujarat", "Maharashtra"],
+    "North": ["Jammu & Kashmir", "Himachal Pradesh", "Punjab","Haryana","Uttarakhand","Uttar Pradesh","Delhi"],
+    "South": ["Tamil Nadu", "Kerala", "Karnataka", "Andhra Pradesh", "Telangana"],
+    "North-East": ["Assam", "Arunachal Pradesh", "Nagaland", "Manipur", "Meghalaya", "Mizoram", "Tripura", "Sikkim"],
+    "West": ["Rajasthan", "Gujarat", "Maharashtra", "Goa"],
     "Central": ["Madhya Pradesh", "Chhattisgarh"],
+    "East": ["West Bengal", "Jharkand", "Odisha", "Bihar"],
   };
 
-  // Mapping states to placeholder images (You should replace these with actual images)
   final Map<String, String> stateImages = {
-    "Jammu & Kashmir": "assets/jammu_kashmir.jpg",
-    "Uttar Pradesh": "assets/uttar_pradesh.jpg",
-    "Punjab": "assets/punjab.jpg",
-    "Harayana": "assets/Harayana.jpg",
-    "Himachal Pradesh": "assets/Himachal_Pradesh.jpg",
-    "Tamil Nadu": "assets/tamil_nadu.jpg",
-    "Kerala": "assets/kerala.jpg",
-    "Karnataka": "assets/karnataka.jpg",
-    "Assam": "assets/assam.jpg",
-    "Meghalaya": "assets/meghalaya.jpg",
-    "Nagaland": "assets/nagaland.jpg",
-    "Rajasthan": "assets/rajasthan.jpg",
-    "Gujarat": "assets/gujarat.jpg",
-    "Maharashtra": "assets/maharashtra.jpg",
-    "Madhya Pradesh": "assets/madhya_pradesh.jpg",
-    "Chhattisgarh": "assets/chhattisgarh.jpg",
+    "Jammu & Kashmir": "assets/images/north/jammuandkashmir.jpg",
+    "Himachal Pradesh": "assets/images/north/himachalpradesh.jpeg",
+    "Punjab": "assets/images/north/punjab.jpg",
+    "Haryana": "assets/images/north/haryana.jpeg",
+    "Uttarakhand": "assets/images/north/uttarakhand.jpg",
+    "Uttar Pradesh": "assets/images/north/uttarpradesh.jpg",
+    "Delhi": "assets/images/north/delhi.jpg",
+    
+    "Tamil Nadu": "assets/images/south/tamilnadu.webp",
+    "Kerala": "assets/images/south/kerala.webp",
+    "Karnataka": "assets/images/south/karnataka.jpg",
+    "Andhra Pradesh": "assets/images/south/andhrapradesh.jpg",
+    "Telangana": "assets/images/south/telangana.jpg",
+
+    "Assam": "assets/images/north_east/assam.jpg",
+    "Arunachal Pradesh": "assets/images/north_east/arunachalpradesh.jpg",
+    "Nagaland": "assets/images/north_east/nagaland.jpg",
+    "Manipur": "assets/images/north_east/manipur.webp",
+    "Meghalaya": "assets/images/north_east/meghalaya.jpg",
+    "Mizoram": "assets/images/north_east/mizoram.jpg",
+    "Tripura": "assets/images/north_east/tripura.jpg",
+    "Sikkim": "assets/images/north_east/sikkim.jpg",
+
+    "Rajasthan": "assets/images/west/rajasthan.webp",
+    "Gujarat": "assets/images/west/gujarat.jpg",
+    "Maharashtra": "assets/images/west/maharashtra.jpg",
+    "Goa": "assets/images/west/goa.jpeg",
+
+    "Madhya Pradesh": "assets/images/central/madhyapradesh.webp",
+    "Chhattisgarh": "assets/images/central/chhattisgarh.jpg",
+
+    "West Bengal": "assets/images/east/westbengal.jpeg",
+    "Odisha": "assets/images/east/odisha.webp",
+    "Jharkand": "assets/images/east/jharkand.jpg",
+    "Bihar": "assets/images/east/bihar.webp",
   };
 
   @override
@@ -49,11 +68,11 @@ class CultureSelectionPage extends StatelessWidget {
           itemCount: cultures[region]!.length,
           itemBuilder: (context, index) {
             String culture = cultures[region]![index];
-            String imagePath = stateImages[culture] ?? "assets/default.jpg";
+            String imagePath = stateImages[culture] ?? "assets/default.jpg";  
 
             return GestureDetector(
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CategorySelectionPage(culture: culture),

@@ -14,13 +14,12 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
   final PageController _pageController = PageController(viewportFraction: 0.8);
   int _currentIndex = 0;
 
-  // Mapping categories to images (Replace these with actual assets)
   final Map<String, String> categoryImages = {
-    "Food": "assets/food.jpg",
-    "Festivals": "assets/festivals.jpg",
-    "Rituals": "assets/rituals.jpg",
-    "Art": "assets/art.jpg",
-    "Language": "assets/language.jpg",
+    "Food": "assets/images/food.jpg",
+    "Festivals": "assets/images/festivals.png",
+    "Rituals": "assets/images/rituals.jpeg",
+    "Art": "assets/images/art.webp",
+    "Language": "assets/images/language.jpeg",
   };
 
   @override
@@ -29,16 +28,15 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
       body: Column(
         children: [
           const SizedBox(height: 80),
-          // Static "Select" text
           const Text(
-            "Select",
+            "Select a category",
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 20), // Keeps space between text and cards
+          const SizedBox(height: 20), 
           Expanded(
             child: PageView.builder(
               controller: _pageController,
@@ -50,7 +48,7 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
               },
               itemBuilder: (context, index) {
                 String category = categories[index];
-                String imagePath = categoryImages[category] ?? "assets/default.jpg";
+                String imagePath = categoryImages[category] ?? "assets/images/default.png";
 
                 return GestureDetector(
                   onTap: () {
@@ -68,7 +66,7 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
                     duration: const Duration(milliseconds: 400),
                     curve: Curves.easeInOut,
                     margin: EdgeInsets.symmetric(vertical: _currentIndex == index ? 2 : 12, horizontal: 10),
-                    height: 100, // *Smaller card height*
+                    height: 100, 
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: [
