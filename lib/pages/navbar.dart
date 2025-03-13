@@ -1,4 +1,5 @@
 import 'package:cultureconnect/pages/home.dart';
+import 'package:cultureconnect/pages/marketplace/home.dart';
 import 'package:cultureconnect/pages/profile/viewprofile.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class _NavBarState extends State<NavBar> {
   final List<Widget> _pages = [
     HomePage(),
     HomePage(),
-    HomePage(),
+    MarketplaceHome(),
     ViewProfileScreen(),
   ];
 
