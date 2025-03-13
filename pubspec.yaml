@@ -71,6 +71,12 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/north/
+    - assets/images/north_east/
+    - assets/images/central/
+    - assets/images/east/
+    - assets/images/west/
+    - assets/images/south/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -8,12 +8,12 @@ class RegionSelectionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // List of regions with associated images
     final List<Map<String, String>> regions = [
-      {"name": "North", "image": "assets/north.jpg"},
-      {"name": "South", "image": "assets/south.jpg"},
-      {"name": "North-East", "image": "assets/north_east.jpg"},
-      {"name": "West", "image": "assets/west.jpg"},
-      {"name": "Central", "image": "assets/central.jpg"},
-      {"name": "East", "image": "assets/East.jpg"},
+      {"name": "North", "image": "assets/images/north/north.jpg"},
+      {"name": "South", "image": "assets/images/south/south.jpg"},
+      {"name": "North-East", "image": "assets/images/north_east/north_east.webp"},
+      {"name": "West", "image": "assets/images/west/west.jpg"},
+      {"name": "Central", "image": "assets/images/central/central.jpg"},
+      {"name": "East", "image": "assets/images/east/east.jpg"},
     ];
 
     return Scaffold(
@@ -28,12 +28,14 @@ class RegionSelectionPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CultureSelectionPage(region: regions[index]["name"]!),
+                    builder: (context) =>
+                        CultureSelectionPage(region: regions[index]["name"]!),
                   ),
                 );
               },
               child: Container(
-                margin: const EdgeInsets.only(bottom: 16), // Spacing between cards
+                margin:
+                    const EdgeInsets.only(bottom: 16), // Spacing between cards
                 height: 160, // Card height
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
