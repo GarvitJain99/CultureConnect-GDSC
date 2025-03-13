@@ -1,19 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cultureconnect/pages/navbar.dart';
-import 'package:cultureconnect/pages/signin.dart';
+import 'package:cultureconnect/pages/profile/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen>
+class _SignInScreenState extends State<SignInScreen>
     with SingleTickerProviderStateMixin {
-  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -37,24 +36,25 @@ class _SignUpScreenState extends State<SignUpScreen>
     _controller.forward();
   }
 
-  void signUp() async {
+  void signIn() async {
     setState(() => isLoading = true);
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
       User? user = userCredential.user;
       if (user != null) {
-        await _firestore.collection('users').doc(user.uid).set({
-          'name': nameController.text.trim(),
-          'email': emailController.text.trim(),
-          'status': 'New User',
-          'about': '',
-          'location': '',
-          'profileImage': '',
-        });
+        DocumentSnapshot userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        if (!userDoc.exists) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("User data not found! Please sign up again.")),
+          );
+          return;
+        }
 
         Navigator.pushReplacement(
           context,
@@ -95,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Create Account",
+                  "Welcome Back!",
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -103,8 +103,6 @@ class _SignUpScreenState extends State<SignUpScreen>
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildTextField("Name", nameController, false),
-                const SizedBox(height: 16),
                 _buildTextField("Email", emailController, false),
                 const SizedBox(height: 16),
                 _buildTextField("Password", passwordController, true),
@@ -112,17 +110,17 @@ class _SignUpScreenState extends State<SignUpScreen>
                 isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : ElevatedButton(
-                        onPressed: signUp,
+                        onPressed: signIn,
                         style: _buttonStyle(),
-                        child: const Text("Sign Up"),
+                        child: const Text("Sign In"),
                       ),
                 TextButton(
                   onPressed: () => Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignInScreen()),
+                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
                   ),
                   child: const Text(
-                    "Already have an account? Sign In",
+                    "Don't have an account? Sign Up",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -167,5 +165,5 @@ class _SignUpScreenState extends State<SignUpScreen>
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 10,
     );
-}
+  }
 }

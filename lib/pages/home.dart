@@ -1,4 +1,4 @@
-import 'package:cultureconnect/pages/region_selection.dart';
+import 'package:cultureconnect/pages/encyclopedia/region_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:cultureconnect/tools/horList.dart';
 import 'package:cultureconnect/tools/button.dart';
@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20), // Space for status bar
-
+  
               // Custom Title Bar (Replaces AppBar)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),

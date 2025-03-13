@@ -1,18 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cultureconnect/pages/navbar.dart';
-import 'package:cultureconnect/pages/signup.dart';
+import 'package:cultureconnect/pages/profile/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen>
+class _SignUpScreenState extends State<SignUpScreen>
     with SingleTickerProviderStateMixin {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -36,25 +37,24 @@ class _SignInScreenState extends State<SignInScreen>
     _controller.forward();
   }
 
-  void signIn() async {
+  void signUp() async {
     setState(() => isLoading = true);
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
 
       User? user = userCredential.user;
       if (user != null) {
-        DocumentSnapshot userDoc =
-            await _firestore.collection('users').doc(user.uid).get();
-        if (!userDoc.exists) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text("User data not found! Please sign up again.")),
-          );
-          return;
-        }
+        await _firestore.collection('users').doc(user.uid).set({
+          'name': nameController.text.trim(),
+          'email': emailController.text.trim(),
+          'status': 'New User',
+          'about': '',
+          'location': '',
+          'profileImage': '',
+        });
 
         Navigator.pushReplacement(
           context,
@@ -95,7 +95,7 @@ class _SignInScreenState extends State<SignInScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  "Welcome Back!",
+                  "Create Account",
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -103,6 +103,8 @@ class _SignInScreenState extends State<SignInScreen>
                   ),
                 ),
                 const SizedBox(height: 20),
+                _buildTextField("Name", nameController, false),
+                const SizedBox(height: 16),
                 _buildTextField("Email", emailController, false),
                 const SizedBox(height: 16),
                 _buildTextField("Password", passwordController, true),
@@ -110,17 +112,17 @@ class _SignInScreenState extends State<SignInScreen>
                 isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : ElevatedButton(
-                        onPressed: signIn,
+                        onPressed: signUp,
                         style: _buttonStyle(),
-                        child: const Text("Sign In"),
+                        child: const Text("Sign Up"),
                       ),
                 TextButton(
                   onPressed: () => Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                    MaterialPageRoute(builder: (context) => const SignInScreen()),
                   ),
                   child: const Text(
-                    "Don't have an account? Sign Up",
+                    "Already have an account? Sign In",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -165,5 +167,5 @@ class _SignInScreenState extends State<SignInScreen>
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 10,
     );
-  }
+}
 }

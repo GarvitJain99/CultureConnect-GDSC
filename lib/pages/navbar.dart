@@ -1,5 +1,5 @@
 import 'package:cultureconnect/pages/home.dart';
-import 'package:cultureconnect/pages/viewprofile.dart';
+import 'package:cultureconnect/pages/profile/viewprofile.dart';
 import 'package:flutter/material.dart';
 
 class NavBar extends StatefulWidget {

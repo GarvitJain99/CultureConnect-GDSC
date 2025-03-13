@@ -1,5 +1,5 @@
 import 'package:cultureconnect/pages/navbar.dart';
-import 'package:cultureconnect/pages/signin.dart';
+import 'package:cultureconnect/pages/profile/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
