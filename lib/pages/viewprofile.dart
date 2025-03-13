@@ -68,63 +68,173 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Profile"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-            tooltip: "Logout",
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)], // Deep Red to Saffron
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-        ],
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: profileImage.isNotEmpty
-                        ? NetworkImage(profileImage)
-                        : const AssetImage('assets/default_profile.png')
-                            as ImageProvider,
-                  ),
-                  const SizedBox(height: 16),
-                  _buildInfoTile("Name", name),
-                  _buildInfoTile("Status", status),
-                  _buildInfoTile("About", about),
-                  _buildInfoTile("Location", location),
-                  _buildInfoTile("Email", email, isBold: false),
-
-                  const SizedBox(height: 20),
-
-                  ElevatedButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const EditProfileScreen(),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // *Top Bar with Logout*
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "My Profile",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                    child: const Text("Edit Profile"),
-                  ),
-                ],
+                    IconButton(
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      onPressed: _logout,
+                      tooltip: "Logout",
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+              const SizedBox(height: 10),
+
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                    : SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // *Profile Picture with Shadow*
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      blurRadius: 10,
+                                      spreadRadius: 2,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage: profileImage.isNotEmpty
+                                      ? NetworkImage(profileImage)
+                                      : const AssetImage('assets/default_profile.png')
+                                          as ImageProvider,
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // *Profile Details Card*
+                              _buildProfileCard(),
+
+                              const SizedBox(height: 20),
+
+                              // *Edit Profile Button*
+                              ElevatedButton(
+                                onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const EditProfileScreen(),
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.deepOrange,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 14, horizontal: 40),
+                                  textStyle: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  elevation: 8,
+                                ),
+                                child: const Text("Edit Profile"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2), // Glassmorphism effect
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 8,
+            spreadRadius: 1,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildInfoTile("Name", name),
+          _buildInfoTile("Status", status),
+          _buildInfoTile("About", about),
+          _buildInfoTile("Location", location),
+          _buildInfoTile("Email", email, isBold: false),
+        ],
+      ),
     );
   }
 
   Widget _buildInfoTile(String title, String value, {bool isBold = true}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text(value, style: TextStyle(fontSize: 16, fontWeight: isBold ? FontWeight.w500 : FontWeight.normal)),
-        const Divider(),
-     ],
-   );
-  }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.9),
+              letterSpacing: 1.2,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
+              color: Colors.white,
+            ),
+          ),
+          Divider(color: Colors.white.withOpacity(0.5), thickness: 1),
+        ],
+      ),
+     );
+   }
 }
