@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class CartPage extends StatelessWidget {
+  final String? userId = FirebaseAuth.instance.currentUser?.uid; 
+
+  void checkout() async {
+    var cartRef = FirebaseFirestore.instance.collection('users').doc(userId).collection('cart');
+
+    var cartItems = await cartRef.get();
+    for (var doc in cartRef.docs) {
+      var item = doc.data();
+      FirebaseFirestore.instance.collection('users').doc(userId).collection('previous_orders').doc(doc.id).set({
+        'name': item['name'],
+        'price': item['price'],
+        'imageUrl': item['imageUrl'],
+        'orderDate': FieldValue.serverTimestamp(),
+        'sellerId': item['sellerId'],
+      });
+
+      // Update the status of the sold item in the marketplace
+      FirebaseFirestore.instance.collection('marketplace').doc(doc.id).update({
+        'status': 'sold',
+      });
+
+      // Remove from cart after purchase
+      await cartRef.doc(doc.id).delete();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Your Cart")),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance.collection('users').doc(userId).collection('cart').snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+
+          var cartItems = snapshot.data!.docs;
+          double totalPrice = cartData.fold(0, (sum, doc) => sum + doc['price']);
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: cartItems.length,
+                  itemBuilder: (context, index) {
+                    var item = cartItems[index];
+                    return ListTile(
+                      leading: Image.network(item['imageUrl'], width: 50, height: 50, fit: BoxFit.cover),
+                      title: Text(item['name']),
+                      subtitle: Text("\$${item['price']}"),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.remove_circle),
+                        onPressed: () {
+                          FirebaseFirestore.instance.collection('users').doc(userId).collection('cart').doc(item.id).delete();
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+              ElevatedButton(
+                onPressed: checkout,
+                child: const Text("Proceed to Checkout"),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
