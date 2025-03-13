@@ -28,21 +28,20 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: _pages[_selectedIndex],
-      
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onNavItemTapped,
         backgroundColor: const Color.fromARGB(255, 15, 15, 16),
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: Color(0xFFB71C1C),
+        unselectedItemColor: Color.fromARGB(255, 238, 178, 89),
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Community"),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag), label: "Marketplace"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_bag), label: "Marketplace"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
-        ], 
+        ],
       ),
     );
   }

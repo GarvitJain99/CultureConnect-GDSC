@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   ];
   List<Widget> culturepages = [PageOne(), PageTwo(), PageThree(), PageFour()];
 
-  List<String> festivalitems = ["Diwali", "EId", "Holi", "Christmas"];
+  List<String> festivalitems = ["Diwali", "Eid", "Holi", "Christmas"];
   List<String> festivalimages = [
     "assets/images/banner.png",
     "assets/images/banner.png",
@@ -32,96 +32,150 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 200, 126, 212),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text("CultureConnect",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Search Bar
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Search Cultures, Festivals, or Marketplace",
-                  prefixIcon: Icon(Icons.search),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30)),
+      body: Container(
+        decoration: BoxDecoration(
+        gradient: LinearGradient(
+  colors: [Color(0xFFB71C1C), Color(0xFFFFA726)], // Deep red to vibrant saffron
+  begin: Alignment.centerLeft,  // Start from the left
+  end: Alignment.centerRight,   // End at the right
+),
+
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20), // Space for status bar
+
+              // Custom Title Bar (Replaces AppBar)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "CultureConnect",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black38,
+                            offset: Offset(1, 1),
+                            blurRadius: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.notifications, color: Colors.white, size: 28),
+                      onPressed: () {},
+                    ),
+                  ],
                 ),
               ),
-            ),
 
-            // Banner
-            Padding(
-                padding: EdgeInsets.all(16),
+              // Search Bar
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search Cultures, Festivals, or Marketplace",
+                    prefixIcon: Icon(Icons.search, color: Colors.black87),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16),
+
+              // Banner
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Container(
-                  width: 400,
-                  height: 200,
+                  width: double.infinity,
+                  height: 180,
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/banner.png'),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                        offset: Offset(2, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/banner.png',
                       fit: BoxFit.cover,
                     ),
                   ),
-                )),
-
-            // Cultures Section
-            _sectionTitle("Cultures"),
-            horizontalScrollList(
-                cultureitems, cultureimages, culturepages, context),
-
-            // Events & Festivals Section
-            _sectionTitle("Upcoming Festivals"),
-            horizontalScrollList(
-                festivalitems, festivalimages, festivalpages, context),
-
-            // Fun Fact
-            _funFactCard(),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Button
-                CustomButton(
-                  text: "Encyclopedia",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            RegionSelectionPage()
-                      ),
-                    );
-                  },
-                  backgroundColor: Colors.purple,
-                  textColor: Colors.white,
-                  borderColor: Colors.black,
-                  borderRadius: 20.0,
-                  elevation: 15.0,
-                  width: 300.0,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                  icon: Icons.book,
-                  iconColor: Colors.white,
-                  iconSize: 28.0,
-                  isLoading: false, // Set to true to show loading
                 ),
-              ],
-            )
-          ],
+              ),
+
+              SizedBox(height: 20),
+
+              // Cultures Section
+              _sectionTitle("Cultures"),
+              _cardContainer(
+                horizontalScrollList(cultureitems, cultureimages, culturepages, context),
+              ),
+
+              // Events & Festivals Section
+              _sectionTitle("Upcoming Festivals"),
+              _cardContainer(
+                horizontalScrollList(festivalitems, festivalimages, festivalpages, context),
+              ),
+
+              // Fun Fact
+              _funFactCard(),
+
+              // Encyclopedia Button
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: CustomButton(
+                    text: "Encyclopedia",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RegionSelectionPage(),
+                        ),
+                      );
+                    },
+                    backgroundColor: Color(0xFF005F6B),
+                    textColor: Colors.white,
+                    borderColor: Colors.white,
+                    borderRadius: 30.0,
+                    elevation: 10.0,
+                    width: 280.0,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    icon: Icons.book,
+                    iconColor: Colors.white,
+                    iconSize: 30.0,
+                    isLoading: false,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -130,27 +184,60 @@ class _HomePageState extends State<HomePage> {
   // Section Title Widget
   Widget _sectionTitle(String title) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Text(
         title,
         style: TextStyle(
-            fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          shadows: [
+            Shadow(
+              color: Colors.black38,
+              offset: Offset(1, 1),
+              blurRadius: 3,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // 📌 Fun Fact Card
+  // Card Container
+  Widget _cardContainer(Widget child) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 6,
+              offset: Offset(2, 3),
+            ),
+          ],
+        ),
+        padding: EdgeInsets.all(8),
+        child: child,
+      ),
+    );
+  }
+
+  // Fun Fact Card
   Widget _funFactCard() {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Card(
+        color: Colors.white.withOpacity(0.9),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 3,
+        elevation: 5,
         child: Padding(
           padding: EdgeInsets.all(16),
           child: Text(
-            "Did you know? The Kumbh Mela is the world's largest peaceful gathering, with millions of pilgrims attending!",
-            style: TextStyle(fontSize: 16),
+            "✨ Did you know? The Kumbh Mela is the world's largest peaceful gathering with millions of pilgrims attending!",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             textAlign: TextAlign.center,
           ),
         ),
@@ -159,15 +246,13 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+// Dummy Pages
 class PageOne extends StatelessWidget {
   const PageOne({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Page One")),
-      body: Center(child: Text("Welcome to Page One!")),
-    );
+    return _dummyPage("Page One");
   }
 }
 
@@ -176,10 +261,7 @@ class PageTwo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Page Two")),
-      body: Center(child: Text("Welcome to Page Two!")),
-    );
+    return _dummyPage("Page Two");
   }
 }
 
@@ -188,10 +270,7 @@ class PageThree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Page One")),
-      body: Center(child: Text("Welcome to Page One!")),
-    );
+    return _dummyPage("Page Three");
   }
 }
 
@@ -200,9 +279,13 @@ class PageFour extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Page One")),
-      body: Center(child: Text("Welcome to Page One!")),
-    );
+    return _dummyPage("Page Four");
   }
+}
+
+Widget _dummyPage(String title) {
+  return Scaffold(
+    appBar: AppBar(title: Text(title)),
+    body: Center(child: Text("Welcome to $title!")),
+  );
 }

@@ -1,4 +1,3 @@
-// import 'dart:io';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -147,68 +146,127 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Profile")),
       body: Container(
-        color: const Color.fromARGB(255, 224, 144, 217), // Light pink background
-        padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Card(
-            color: Colors.white, // Keeps the UI elements on a white background
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 5,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          GestureDetector(
-                            onTap: _showImageSourceDialog,
-                            child: Stack(
-                              alignment: Alignment.bottomRight,
-                              children: [
-                                CircleAvatar(
-                                  radius: 60,
-                                  backgroundImage: _selectedImage != null
-                                      ? FileImage(_selectedImage!)
-                                      : (profileImage.isNotEmpty
-                                              ? NetworkImage(profileImage)
-                                              : const AssetImage(
-                                                  'assets/default_profile.png'))
-                                          as ImageProvider,
-                                ),
-                                const CircleAvatar(
-                                  radius: 18,
-                                  backgroundColor: Colors.blue,
-                                  child: Icon(Icons.camera_alt,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          _buildTextField("Name", nameController),
-                          _buildTextField("Status", statusController),
-                          _buildTextField("About", aboutController),
-                          _buildTextField("Location", locationController),
-                          const SizedBox(height: 2),
-                          ElevatedButton(
-                            onPressed: _saveProfile,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
-                            ),
-                            child: const Text(" Save Changes "),
-                          ),
-                        ],
-                      ),
-                    ),
-            ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)], // Deep Red to Saffron
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // *Top Bar*
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Spacer(),
+                    const Text(
+                      "Edit Profile",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                    : SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              // *Profile Picture with Edit Icon*
+                              GestureDetector(
+                                onTap: _showImageSourceDialog,
+                                child: Stack(
+                                  alignment: Alignment.bottomRight,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 60,
+                                      backgroundImage: _selectedImage != null
+                                          ? FileImage(_selectedImage!)
+                                          : (profileImage.isNotEmpty
+                                                  ? NetworkImage(profileImage)
+                                                  : const AssetImage(
+                                                      'assets/default_profile.png'))
+                                              as ImageProvider,
+                                    ),
+                                    const CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: Colors.white,
+                                      child: Icon(Icons.camera_alt, color: Colors.deepOrange),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              // *Profile Input Fields*
+                              _buildProfileCard(),
+
+                              const SizedBox(height: 20),
+
+                              // *Save Button*
+                              ElevatedButton(
+                                onPressed: _saveProfile,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.deepOrange,
+                                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                                  textStyle: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  elevation: 8,
+                                ),
+                                child: const Text("Save Changes"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileCard() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+      ),
+      child: Column(
+        children: [
+          _buildTextField("Name", nameController),
+          _buildTextField("Status", statusController),
+          _buildTextField("About", aboutController),
+          _buildTextField("Location", locationController),
+        ],
       ),
     );
   }
