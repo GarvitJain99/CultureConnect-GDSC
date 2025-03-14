@@ -1,6 +1,6 @@
 import 'package:cultureconnect/pages/encyclopedia/region_selection.dart';
 import 'package:flutter/material.dart';
-import 'package:cultureconnect/tools/horList.dart';
+import 'package:cultureconnect/tools/hor_list.dart';
 import 'package:cultureconnect/tools/button.dart';
 
 class HomePage extends StatefulWidget {

@@ -61,7 +61,7 @@ class MarketplaceHome extends StatelessWidget {
                       )
                     : const Icon(Icons.image_not_supported, size: 50),
                 title: Text(data['name'] ?? "No name"),
-                subtitle: Text(data['price'] != null ? "\₹${data['price']}" : "Price not available"),
+                subtitle: Text(data['price'] != null ? "₹${data['price']}" : "Price not available"),
                 onTap: () {
                   Navigator.push(
                     context,
