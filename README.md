@@ -13,7 +13,7 @@ Culture Connect is a Flutter-based mobile application that fosters cultural exch
 ## Tech Stack
 
 - **Frontend:** Flutter (Dart)
-- **Backend:** Firebase / Node.js
-- **Database:** Firestore / MongoDB (as per implementation)
+- **Backend:** Firebase
+- **Database:** Firestore 
 - **Authentication:** Firebase Authentication
 - **State Management:** Provider / Riverpod / Bloc (as per usage)
