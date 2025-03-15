@@ -47,6 +47,10 @@ dependencies:
   flutter_markdown: ^0.7.6+2
   url_launcher: ^6.3.1
   razorpay_flutter: ^1.4.0
+  google_maps_flutter: ^2.10.1
+  geolocator: ^13.0.2
+  google_places_flutter: ^2.1.0
+  geocoding: ^3.0.0
 
 dev_dependencies:
   flutter_test:

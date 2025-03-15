@@ -4,6 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class SellItemPage extends StatefulWidget {
   const SellItemPage({super.key});
@@ -17,9 +20,22 @@ class _SellItemPageState extends State<SellItemPage> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
-  
+  final TextEditingController locationController = TextEditingController();
+
   File? _selectedImage;
   bool _isUploading = false;
+  LatLng? selectedLocation;
+  String? selectedAddress;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    descriptionController.dispose();
+    categoryController.dispose();
+    locationController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
@@ -54,11 +70,43 @@ class _SellItemPageState extends State<SellItemPage> {
     );
   }
 
+  /// **Updated: Converts selected LatLng to an Address**
+  Future<void> _selectLocation() async {
+    final LatLng? location = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SelectLocationPage()),
+    );
+
+    if (location != null) {
+      setState(() {
+        selectedLocation = location;
+      });
+      await _getAddressFromLatLng(location.latitude, location.longitude);
+    }
+  }
+
+  Future<void> _getAddressFromLatLng(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        setState(() {
+          selectedAddress =
+              "${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
+          locationController.text = selectedAddress!;
+        });
+      }
+    } catch (e) {
+      print("Error getting address: $e");
+    }
+  }
+
   Future<void> sellItem() async {
     if (nameController.text.isEmpty ||
         priceController.text.isEmpty ||
         descriptionController.text.isEmpty ||
         categoryController.text.isEmpty ||
+        selectedAddress == null ||
         _selectedImage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill all fields and select an image")),
@@ -70,13 +118,11 @@ class _SellItemPageState extends State<SellItemPage> {
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
 
     try {
-      // Upload image to Firebase Storage
       String filePath = 'marketplace_images/${DateTime.now().millisecondsSinceEpoch}.jpg';
       UploadTask uploadTask = FirebaseStorage.instance.ref(filePath).putFile(_selectedImage!);
       TaskSnapshot snapshot = await uploadTask;
       String imageUrl = await snapshot.ref.getDownloadURL();
 
-      // Store item in Firestore
       DocumentReference docRef = await FirebaseFirestore.instance.collection('marketplace').add({
         'name': nameController.text,
         'price': double.parse(priceController.text),
@@ -84,9 +130,13 @@ class _SellItemPageState extends State<SellItemPage> {
         'imageUrl': imageUrl,
         'category': categoryController.text,
         'sellerId': userId,
+        'location': {
+          'latitude': selectedLocation!.latitude,
+          'longitude': selectedLocation!.longitude,
+          'address': selectedAddress,
+        },
       });
 
-      // Add item to user's listed items
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
@@ -136,17 +186,120 @@ class _SellItemPageState extends State<SellItemPage> {
               ),
             ),
             const SizedBox(height: 16),
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: "Item Name")),
-            TextField(controller: priceController, decoration: const InputDecoration(labelText: "Price"), keyboardType: TextInputType.number),
-            TextField(controller: descriptionController, decoration: const InputDecoration(labelText: "Description")),
-            TextField(controller: categoryController, decoration: const InputDecoration(labelText: "Category")),
+            TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: "Item Name")),
+            TextField(
+                controller: priceController,
+                decoration: const InputDecoration(labelText: "Price"),
+                keyboardType: TextInputType.number),
+            TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(labelText: "Description")),
+            TextField(
+                controller: categoryController,
+                decoration: const InputDecoration(labelText: "Category")),
+            const SizedBox(height: 16),
+            TextField(
+              controller: locationController,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: "Pickup Location",
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.location_on),
+                  onPressed: _selectLocation,
+                ),
+              ),
+            ),
             const SizedBox(height: 20),
             _isUploading
                 ? const CircularProgressIndicator()
-                : ElevatedButton(onPressed: sellItem, child: const Text("Sell Item")),
+                : ElevatedButton(
+                    onPressed: sellItem, child: const Text("Sell Item")),
           ],
         ),
       ),
     );
   }
 }
+
+
+/// **New SelectLocationPage**
+class SelectLocationPage extends StatefulWidget {
+  const SelectLocationPage({super.key});
+
+  @override
+  _SelectLocationPageState createState() => _SelectLocationPageState();
+}
+
+class _SelectLocationPageState extends State<SelectLocationPage> {
+  LatLng? _selectedLatLng;
+  GoogleMapController? _mapController;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation();
+  }
+
+  Future<void> _getUserLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      setState(() => _isLoading = false);
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    _selectedLatLng = LatLng(position.latitude, position.longitude);
+
+    setState(() => _isLoading = false);
+
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLngZoom(_selectedLatLng!, 15),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Select Location")),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _selectedLatLng ?? const LatLng(20.5937, 78.9629), // Default to India if location not found
+                zoom: 15,
+              ),
+              onMapCreated: (controller) {
+                _mapController = controller;
+                if (_selectedLatLng != null) {
+                  _mapController!.animateCamera(
+                    CameraUpdate.newLatLngZoom(_selectedLatLng!, 15),
+                  );
+                }
+              },
+              onTap: (LatLng latLng) {
+                setState(() => _selectedLatLng = latLng);
+              },
+              markers: _selectedLatLng != null
+                  ? {Marker(markerId: const MarkerId("selected"), position: _selectedLatLng!)}
+                  : {},
+            ),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text("Confirm"),
+        icon: const Icon(Icons.check),
+        onPressed: () {
+          if (_selectedLatLng != null) {
+            Navigator.pop(context, _selectedLatLng);
+          }
+        },
+      ),
+    );
+  }
+}
+

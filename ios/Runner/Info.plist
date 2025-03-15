@@ -11,6 +11,10 @@
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to show nearby places.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We need your location for better services.</string>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>cultureconnect</string>
