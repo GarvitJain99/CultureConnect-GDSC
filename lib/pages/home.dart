@@ -209,14 +209,14 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0),
+          color: Colors.white.withOpacity(0.4),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(2, 3),
-            ),
+            // BoxShadow(
+            //   color: Colors.black26,
+            //   blurRadius: 6,
+            //   offset: Offset(2, 3),
+            // ),
           ],
         ),
         padding: EdgeInsets.all(8),
