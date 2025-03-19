@@ -26,6 +26,7 @@ class UserProfilePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // User Profile Info
                       Center(
                         child: Column(
                           children: [
@@ -87,7 +88,59 @@ class UserProfilePage extends StatelessWidget {
 
                       const SizedBox(height: 20),
 
-                      // Previous Orders Section
+                      // Ongoing Orders Section
+                      const Text("Ongoing Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userId)
+                            .collection('ongoing_orders')
+                            .orderBy('timestamp', descending: true)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                            return const Text("No ongoing orders.", style: TextStyle(color: Colors.grey));
+                          }
+                          var orders = snapshot.data!.docs;
+                          return SizedBox(
+                            height: 300,
+                            child: ListView.builder(
+                              itemCount: orders.length,
+                              itemBuilder: (context, index) {
+                                var order = orders[index];
+                                var items = List<Map<String, dynamic>>.from(order['items']);
+                                return Card(
+                                  elevation: 2,
+                                  margin: const EdgeInsets.symmetric(vertical: 5),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Order ID: ${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                        Text("Total Price: ₹${order['total_price']}"),
+                                        Text("Date: ${order['timestamp'].toDate()}"),
+                                        const SizedBox(height: 5),
+                                        const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
+                                        ...items.map((item) => Text("- ${item['name']} (x${item['quantity']})")).toList(),
+                                        const SizedBox(height: 10),
+                                        ElevatedButton(
+                                          onPressed: () => _markOrderAsCompleted(userId, order),
+                                          child: const Text("Mark as Completed"),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+
                       const Text("Previous Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       StreamBuilder(
@@ -98,16 +151,17 @@ class UserProfilePage extends StatelessWidget {
                             .orderBy('timestamp', descending: true)
                             .snapshots(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                            return const Text("No previous orders.", style: TextStyle(color: Colors.grey));
+                          }
                           var orders = snapshot.data!.docs;
-                          if (orders.isEmpty) return const Text("No previous orders.");
                           return SizedBox(
                             height: 300,
                             child: ListView.builder(
                               itemCount: orders.length,
                               itemBuilder: (context, index) {
                                 var order = orders[index];
-                                var items = List<Map<String, dynamic>>.from(order['items']);
+                                var items = List<Map<String, dynamic>>.from(order['items'] ?? []);
                                 return Card(
                                   elevation: 2,
                                   margin: const EdgeInsets.symmetric(vertical: 5),
@@ -137,5 +191,19 @@ class UserProfilePage extends StatelessWidget {
               },
             ),
     );
+  }
+
+  void _markOrderAsCompleted(String userId, QueryDocumentSnapshot order) async {
+    final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+
+    try {
+      // Move order to "previous_orders"
+      await userRef.collection('previous_orders').add(Map<String, dynamic>.from(order.data() as Map));
+
+      // Remove order from "ongoing_orders"
+      await userRef.collection('ongoing_orders').doc(order.id).delete();
+    } catch (e) {
+      print("Error marking order as completed: $e");
+    }
   }
 }
