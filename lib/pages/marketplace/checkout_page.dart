@@ -1,4 +1,5 @@
-import 'package:cultureconnect/pages/marketplace/select_location.dart';
+import 'package:cultureconnect/pages/marketplace/order_confirmation.dart';
+import 'package:cultureconnect/pages/marketplace/dropoff_location.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -14,19 +15,27 @@ class CheckoutPage extends StatefulWidget {
 class _CheckoutPageState extends State<CheckoutPage> {
   final Razorpay _razorpay = Razorpay();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _pincodeController = TextEditingController();
+  final TextEditingController _additionalNotesController =
+      TextEditingController();
   double totalAmount = 0;
   List<Map<String, dynamic>> cartItems = [];
 
   final _formKey = GlobalKey<FormState>();
   String phone = '';
   String street = '';
-  String city = '';
-  String state = '';
+  String? selectedCity;
+  String? selectedState;
   String pincode = '';
-  String additionalNotes = '';
+  double? _latitude;
+  double? _longitude;
 
   bool _isFormValid() {
-    return phone.isNotEmpty && street.isNotEmpty; // Modified this line
+    return _formKey.currentState?.validate() ?? false;
   }
 
   @override
@@ -42,6 +51,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void dispose() {
     _locationController.dispose();
+    _phoneController.dispose();
+    _streetController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _pincodeController.dispose();
+    _additionalNotesController.dispose();
     _razorpay.clear();
     super.dispose();
   }
@@ -82,10 +97,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
       setState(() {
         phone = snapshot.data()?['phone'] ?? '';
         street = address['street'] ?? '';
-        city = address['city'] ?? '';
-        state = address['state'] ?? '';
+        selectedCity = address['city'];
+        selectedState = address['state'];
         pincode = address['pincode'] ?? '';
-        additionalNotes = address['additional notes'] ?? '';
+        _latitude = address['latitude'];
+        _longitude = address['longitude'];
+        _locationController.text = address['full_address'] ?? '';
+
+        _phoneController.text = phone;
+        _streetController.text = street;
+        _cityController.text = selectedCity ?? '';
+        _stateController.text = selectedState ?? '';
+        _pincodeController.text = pincode;
       });
     }
   }
@@ -96,23 +119,27 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
 
-    await userRef.set({
-      'phone': phone,
-      'address': {
-        'street': street,
-        'city': city,
-        'state': state,
-        'pincode': pincode,
-        'additional notes': additionalNotes,
-      },
-    }, SetOptions(merge: true));
+    try {
+      await userRef.set({
+        'phone': _phoneController.text,
+        'address': {
+          'street': _streetController.text,
+          'city': _cityController.text,
+          'state': _stateController.text,
+          'pincode': _pincodeController.text,
+          'full_address': _locationController.text,
+          'latitude': _latitude,
+          'longitude': _longitude,
+        },
+      }, SetOptions(merge: true));
+    } catch (e) {
+      print("Error saving address with location data: $e");
+    }
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    print("Payment Success Callback triggered!"); 
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      print("User is null in Payment Success Callback!"); 
       return;
     }
 
@@ -125,34 +152,38 @@ class _CheckoutPageState extends State<CheckoutPage> {
         'total_price': totalAmount,
         'payment_id': response.paymentId,
         'address': {
-          'phone': phone,
-          'street': street,
-          'city': city,
-          'state': state,
-          'pincode': pincode,
+          'phone': _phoneController.text,
+          'street': _streetController.text,
+          'city': _cityController.text,
+          'state': _stateController.text,
+          'pincode': _pincodeController.text,
+          'full_address': _locationController.text,
+          'latitude': _latitude,
+          'longitude': _longitude,
         },
         'timestamp': FieldValue.serverTimestamp(),
       });
-      print("Order added to ongoing_orders successfully!"); 
     } catch (e) {
-      print("Error adding to ongoing_orders: $e"); 
+      print("Error adding to ongoing_orders: $e");
     }
 
     try {
       await _clearCart(user.uid);
-      print("Cart cleared successfully!"); 
     } catch (e) {
-      print("Error clearing cart: $e"); 
+      print("Error clearing cart: $e");
     }
 
     setState(() {
       totalAmount = 0;
       cartItems.clear();
-      print("UI updated - cart cleared and total reset."); 
     });
 
-    _showSnackbar("Payment successful! ID: ${response.paymentId}");
-    print("Snackbar shown."); 
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              OrderConfirmationPage(paymentId: response.paymentId!)),
+    );
   }
 
   Future<void> _clearCart(String userId) async {
@@ -189,7 +220,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         'name': 'CultureConnect',
         'description': 'Payment for items in the marketplace',
         'prefill': {
-          'contact': phone,
+          'contact': _phoneController.text,
           'email': FirebaseAuth.instance.currentUser?.email
         },
         'external': {
@@ -221,7 +252,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           child: ListView(
             children: [
               TextFormField(
-                initialValue: phone,
+                controller: _phoneController,
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
                   border: OutlineInputBorder(),
@@ -229,6 +260,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 keyboardType: TextInputType.phone,
                 onSaved: (val) => phone = val!,
                 onChanged: (value) => setState(() {}),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your phone number';
+                  }
+                  if (!RegExp(r'^{10}$').hasMatch(value)) {
+                    return 'Please enter a valid 10-digit phone number';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(
@@ -242,15 +282,31 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       final selectedLocation = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SelectLocationPage(),
+                          builder: (context) => DropoffLocationPage(
+                            initialLatitude: _latitude,
+                            initialLongitude: _longitude,
+                          ),
                         ),
                       );
 
                       if (selectedLocation != null && selectedLocation is Map) {
                         setState(() {
-                          street = selectedLocation['address'] ?? '';
                           _locationController.text =
                               selectedLocation['address'] ?? '';
+                          _latitude = selectedLocation['latitude'];
+                          _longitude = selectedLocation['longitude'];
+                          selectedState = selectedLocation['state'];
+                          selectedCity = selectedLocation['city'];
+                          street =
+                              selectedLocation['street'] ?? ''; // Get street
+                          pincode =
+                              selectedLocation['pincode'] ?? ''; // Get pincode
+
+                          _streetController.text = street;
+                          _stateController.text = selectedState ?? '';
+                          _cityController.text = selectedCity ?? '';
+                          _pincodeController.text =
+                              pincode; // Update pincode controller
                         });
                       }
                     },
@@ -258,50 +314,88 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
                 readOnly: true,
                 onChanged: (value) => setState(() {}),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select your location';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(
-                initialValue: street,
+                controller: _streetController,
                 decoration: InputDecoration(
                   labelText: 'Street',
                   border: OutlineInputBorder(),
                 ),
                 onSaved: (val) => street = val!,
                 onChanged: (value) => setState(() {}),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your street address';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(
-                initialValue: city,
-                decoration: InputDecoration(
-                  labelText: 'City',
-                  border: OutlineInputBorder(),
-                ),
-                onSaved: (val) => city = val!,
-                onChanged: (value) => setState(() {}),
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                initialValue: state,
+                controller: _stateController,
                 decoration: InputDecoration(
                   labelText: 'State',
                   border: OutlineInputBorder(),
                 ),
-                onSaved: (val) => state = val!,
-                onChanged: (value) => setState(() {}),
+                onSaved: (val) => selectedState = val,
+                onChanged: (value) => setState(() {
+                  selectedState = value;
+                }),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your state';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(
-                initialValue: pincode,
+                controller: _cityController,
+                decoration: InputDecoration(
+                  labelText: 'City',
+                  border: OutlineInputBorder(),
+                ),
+                onSaved: (val) => selectedCity = val,
+                onChanged: (value) => setState(() {
+                  selectedCity = value;
+                }),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your city';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 10),
+              TextFormField(
+                controller: _pincodeController,
                 decoration: InputDecoration(
                   labelText: 'Pincode',
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
                 onSaved: (val) => pincode = val!,
-                onChanged: (value) => setState(() {}),
+                // No need for onChanged here as it's fetched
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your pincode';
+                  }
+                  if (!RegExp(r'^{6}$').hasMatch(value)) {
+                    return 'Please enter a valid 6-digit pincode';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               TextFormField(
+                controller: _additionalNotesController,
                 decoration: InputDecoration(
                   labelText: 'Additional Notes (Optional)',
                   hintText: 'Any special delivery instructions...',
@@ -310,14 +404,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 minLines: 3,
-                onSaved: (val) => additionalNotes = val ?? '',
+                // No onSaved or onChanged as we are not saving this
               ),
               SizedBox(height: 20),
               StatefulBuilder(
                 builder: (context, setState) {
-                  return ElevatedButton(
-                    onPressed: _isFormValid() ? _startPayment : null,
-                    child: Text('Proceed to Pay'),
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total: ₹${totalAmount.toStringAsFixed(2)}',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      ElevatedButton(
+                        onPressed: _isFormValid() ? _startPayment : null,
+                        child: Text('Proceed to Pay'),
+                      ),
+                    ],
                   );
                 },
               ),

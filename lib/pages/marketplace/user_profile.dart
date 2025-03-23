@@ -3,6 +3,7 @@ import 'package:cultureconnect/pages/marketplace/sell_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; 
 
 class UserProfilePage extends StatelessWidget {
   const UserProfilePage({super.key});
@@ -52,7 +53,6 @@ class UserProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      // Listed Items Section
                       const Text("Your Listed Items", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       StreamBuilder(
@@ -61,27 +61,26 @@ class UserProfilePage extends StatelessWidget {
                           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
                           var items = snapshot.data!.docs;
                           if (items.isEmpty) return const Text("No items listed yet.");
-                          return SizedBox(
-                            height: 200,
-                            child: ListView.builder(
-                              itemCount: items.length,
-                              itemBuilder: (context, index) {
-                                var item = items[index];
-                                return ListTile(
-                                  leading: Image.network(item['imageUrl'], width: 50, height: 50, fit: BoxFit.cover),
-                                  title: Text(item['name']),
-                                  subtitle: Text("₹${item['price']}"),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ItemDetailsPage(itemId: item.id),
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
+                          return ListView.builder(
+                            shrinkWrap: true, 
+                            physics: const NeverScrollableScrollPhysics(), 
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              var item = items[index];
+                              return ListTile(
+                                leading: Image.network(item['imageUrl'], width: 50, height: 50, fit: BoxFit.cover),
+                                title: Text(item['name']),
+                                subtitle: Text("₹${item['price']}"),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ItemDetailsPage(itemId: item.id),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
                           );
                         },
                       ),
@@ -103,44 +102,48 @@ class UserProfilePage extends StatelessWidget {
                             return const Text("No ongoing orders.", style: TextStyle(color: Colors.grey));
                           }
                           var orders = snapshot.data!.docs;
-                          return SizedBox(
-                            height: 300,
-                            child: ListView.builder(
-                              itemCount: orders.length,
-                              itemBuilder: (context, index) {
-                                var order = orders[index];
-                                var items = List<Map<String, dynamic>>.from(order['items']);
-                                return Card(
-                                  elevation: 2,
-                                  margin: const EdgeInsets.symmetric(vertical: 5),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Order ID: ${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                                        Text("Total Price: ₹${order['total_price']}"),
-                                        Text("Date: ${order['timestamp'].toDate()}"),
-                                        const SizedBox(height: 5),
-                                        const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
-                                        ...items.map((item) => Text("- ${item['name']} (x${item['quantity']})")).toList(),
-                                        const SizedBox(height: 10),
-                                        ElevatedButton(
-                                          onPressed: () => _markOrderAsCompleted(userId, order),
-                                          child: const Text("Mark as Completed"),
-                                        ),
-                                      ],
-                                    ),
+                          return ListView.builder(
+                            shrinkWrap: true, // Added to allow it to be in a Column
+                            physics: const NeverScrollableScrollPhysics(), // To disable its own scrolling
+                            itemCount: orders.length,
+                            itemBuilder: (context, index) {
+                              var order = orders[index];
+                              var items = List<Map<String, dynamic>>.from(order['items']);
+                              final DateTime orderDate = (order['timestamp'] as Timestamp).toDate();
+                              final String formattedDate = DateFormat('dd-MM-yyyy').format(orderDate);
+
+                              return Card(
+                                elevation: 2,
+                                margin: const EdgeInsets.symmetric(vertical: 5),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
+                                      ...items.map((item) => Text("- ${item['name']} (x${item['quantity']})")).toList(),
+                                      const SizedBox(height: 5),
+                                      Text("Total Price: ₹${order['total_price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      Text("Date: $formattedDate", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      Text("Order ID: ${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      const SizedBox(height: 5),
+                                      const SizedBox(height: 10),
+                                      ElevatedButton(
+                                        onPressed: () => _markOrderAsCompleted(userId, order),
+                                        child: const Text("Mark as Completed"),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           );
                         },
                       ),
 
                       const SizedBox(height: 20),
 
+                      // Previous Orders Section
                       const Text("Previous Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       StreamBuilder(
@@ -155,33 +158,36 @@ class UserProfilePage extends StatelessWidget {
                             return const Text("No previous orders.", style: TextStyle(color: Colors.grey));
                           }
                           var orders = snapshot.data!.docs;
-                          return SizedBox(
-                            height: 300,
-                            child: ListView.builder(
-                              itemCount: orders.length,
-                              itemBuilder: (context, index) {
-                                var order = orders[index];
-                                var items = List<Map<String, dynamic>>.from(order['items'] ?? []);
-                                return Card(
-                                  elevation: 2,
-                                  margin: const EdgeInsets.symmetric(vertical: 5),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Order ID: ${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                                        Text("Total Price: ₹${order['total_price']}"),
-                                        Text("Date: ${order['timestamp'].toDate()}"),
-                                        const SizedBox(height: 5),
-                                        const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
-                                        ...items.map((item) => Text("- ${item['name']} (x${item['quantity']})")).toList(),
-                                      ],
-                                    ),
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: orders.length,
+                            itemBuilder: (context, index) {
+                              var order = orders[index];
+                              var items = List<Map<String, dynamic>>.from(order['items'] ?? []);
+                              final DateTime orderDate = (order['timestamp'] as Timestamp).toDate();
+                              final String formattedDate = DateFormat('dd-MM-yyyy').format(orderDate);
+
+                              return Card(
+                                elevation: 2,
+                                margin: const EdgeInsets.symmetric(vertical: 5),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
+                                      ...items.map((item) => Text("- ${item['name']} (x${item['quantity']})")).toList(),
+                                      const SizedBox(height: 5),
+                                      Text("Total Price: ₹${order['total_price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      Text("Date: $formattedDate", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      Text("Order ID: ${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      const SizedBox(height: 5),
+                                    ],
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           );
                         },
                       ),

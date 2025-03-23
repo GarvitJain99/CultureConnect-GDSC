@@ -22,26 +22,26 @@ class CartPage extends StatelessWidget {
     }
 
     return Scaffold(
-      extendBodyBehindAppBar: true, // Allows body to go behind AppBar
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text("Your Cart"),
-        backgroundColor: Colors.transparent, // Makes AppBar transparent
-        elevation: 0, // Removes AppBar shadow
-        centerTitle: true, // Centers the title
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)], // Deep red to saffron
+            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Column(
           children: [
-            const SizedBox(height: kToolbarHeight + 20), // Adjust for AppBar height
+            const SizedBox(height: kToolbarHeight + 20),
             Expanded(
-              child: StreamBuilder(
+              child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
                     .doc(userId)
@@ -122,9 +122,7 @@ class CartPage extends StatelessWidget {
                                                   .doc(userId)
                                                   .collection('cart')
                                                   .doc(item.id)
-                                                  .update({
-                                                'quantity': item['quantity'] - 1,
-                                              });
+                                                  .update({'quantity': item['quantity'] - 1});
                                             } else {
                                               FirebaseFirestore.instance
                                                   .collection('users')
@@ -147,9 +145,7 @@ class CartPage extends StatelessWidget {
                                                 .doc(userId)
                                                 .collection('cart')
                                                 .doc(item.id)
-                                                .update({
-                                              'quantity': item['quantity'] + 1,
-                                            });
+                                                .update({'quantity': item['quantity'] + 1});
                                           },
                                         ),
                                       ],
@@ -168,27 +164,38 @@ class CartPage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(10),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CheckoutPage()),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .collection('cart')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  return ElevatedButton(
+                    onPressed: snapshot.hasData && snapshot.data!.docs.isNotEmpty
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => CheckoutPage()),
+                            );
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text(
+                      'Proceed to Checkout',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
-                child: const Text(
-                  'Proceed to Checkout',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
               ),
             ),
           ],
         ),
       ),
-   );
+    );
   }
 }
