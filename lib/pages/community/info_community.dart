@@ -4,7 +4,7 @@ import 'user_profile.dart';
 
 class CommunityInfoScreen extends StatefulWidget {
   final String communityId;
-  final String currentUserId; // Pass the logged-in user ID
+  final String currentUserId;
 
   CommunityInfoScreen({required this.communityId, required this.currentUserId});
 
@@ -28,18 +28,20 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
 
   Future<void> fetchCommunityDetails() async {
     try {
-      var communityDoc = await _firestore.collection('communities').doc(widget.communityId).get();
+      var communityDoc = await _firestore
+          .collection('communities')
+          .doc(widget.communityId)
+          .get();
 
       if (communityDoc.exists) {
         var data = communityDoc.data() as Map<String, dynamic>;
 
         setState(() {
           communityName = data['name'] ?? 'Community';
-          communityDescription = data['description'] ?? 'No description available';
+          communityDescription =
+              data['description'] ?? 'No description available';
           members = List<String>.from(data['members'] ?? []);
           adminId = data['admin'] ?? '';
-
-          // ✅ Fix: Correctly check if user is the admin
           isAdmin = widget.currentUserId == adminId;
         });
 
@@ -65,7 +67,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
   }
 
   Future<void> removeMember(String memberId) async {
-    if (memberId == adminId) return; // Admin can't remove themselves
+    if (memberId == adminId) return;
 
     setState(() {
       members.remove(memberId);
@@ -80,12 +82,12 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
 
   Future<void> deleteCommunity() async {
     await _firestore.collection('communities').doc(widget.communityId).delete();
-    Navigator.pop(context); // Go back after deleting
+    Navigator.pop(context);
     print("✅ Community deleted: $communityName");
   }
 
   Future<void> leaveCommunity() async {
-    if (isAdmin) return; // Admin should not leave the community
+    if (isAdmin) return;
 
     setState(() {
       members.remove(widget.currentUserId);
@@ -105,7 +107,9 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Community Info"),
+        title: Text("Community Info", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: isAdmin
             ? [
                 IconButton(
@@ -115,15 +119,19 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                       context: context,
                       builder: (context) => AlertDialog(
                         title: Text("Delete Community"),
-                        content: Text("Are you sure you want to delete this community?"),
+                        content: Text(
+                            "Are you sure you want to delete this community?"),
                         actions: [
-                          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+                          TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Cancel")),
                           TextButton(
                             onPressed: () {
                               deleteCommunity();
                               Navigator.pop(context);
                             },
-                            child: Text("Delete", style: TextStyle(color: Colors.red)),
+                            child: Text("Delete",
+                                style: TextStyle(color: Colors.red)),
                           ),
                         ],
                       ),
@@ -133,104 +141,194 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
               ]
             : [],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(communityName, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            Text(communityDescription, style: TextStyle(fontSize: 16)),
-            SizedBox(height: 20),
-            Text("Members:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Expanded(
-              child: members.isEmpty
-                  ? Center(child: Text("No members in this community"))
-                  : ListView.builder(
-                      itemCount: members.length,
-                      itemBuilder: (context, index) {
-                        String memberId = members[index];
-
-                        return FutureBuilder<String>(
-                          future: getUserName(memberId),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return ListTile(title: Text("Loading..."));
-                            }
-                            if (snapshot.hasError || snapshot.data == "Error loading user") {
-                              return ListTile(title: Text("Error loading user ($memberId)"));
-                            }
-
-                            String userName = snapshot.data ?? 'Unknown User';
-
-                            return ListTile(
-                              title: Text(userName),
-                              subtitle: memberId == adminId ? Text("Admin", style: TextStyle(color: Colors.red)) : null,
-                              trailing: isAdmin && memberId != adminId
-                                  ? IconButton(
-                                      icon: Icon(Icons.remove_circle, color: Colors.red),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                            title: Text("Remove Member"),
-                                            content: Text("Are you sure you want to remove $userName?"),
-                                            actions: [
-                                              TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
-                                              TextButton(
-                                                onPressed: () {
-                                                  removeMember(memberId);
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text("Remove", style: TextStyle(color: Colors.red)),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    )
-                                  : null,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => UserProfileScreen(userId: memberId),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
-            ),
-            if (isMember && !isAdmin) // ✅ Fix: Admin should not see the "Leave Community" button
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Leave Community"),
-                        content: Text("Are you sure you want to leave this community?"),
-                        actions: [
-                          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
-                          TextButton(
-                            onPressed: () {
-                              leaveCommunity();
-                              Navigator.pop(context);
-                            },
-                            child: Text("Leave", style: TextStyle(color: Colors.red)),
-                          ),
-                        ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.deepPurple.shade100, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        communityName,
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: Text("Leave Community"),
+                      SizedBox(height: 10),
+                      Text(
+                        communityDescription,
+                        style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-          ],
+              SizedBox(height: 20),
+              Text(
+                "Members:",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple),
+              ),
+              SizedBox(height: 10),
+              Expanded(
+                child: members.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No members in this community",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: members.length,
+                        itemBuilder: (context, index) {
+                          String memberId = members[index];
+
+                          return FutureBuilder<String>(
+                            future: getUserName(memberId),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return ListTile(
+                                  leading: CircularProgressIndicator(),
+                                  title: Text("Loading..."),
+                                );
+                              }
+                              if (snapshot.hasError ||
+                                  snapshot.data == "Error loading user") {
+                                return ListTile(
+                                  leading: Icon(Icons.error, color: Colors.red),
+                                  title: Text("Error loading user ($memberId)"),
+                                );
+                              }
+
+                              String userName = snapshot.data ?? 'Unknown User';
+
+                              return Card(
+                                elevation: 3,
+                                margin: EdgeInsets.symmetric(vertical: 5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.deepPurple,
+                                    child: Text(
+                                      userName[0].toUpperCase(),
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  title: Text(userName),
+                                  subtitle: memberId == adminId
+                                      ? Text("Admin",
+                                          style: TextStyle(color: Colors.red))
+                                      : null,
+                                  trailing: isAdmin && memberId != adminId
+                                      ? IconButton(
+                                          icon: Icon(Icons.remove_circle,
+                                              color: Colors.red),
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                title: Text("Remove Member"),
+                                                content: Text(
+                                                    "Are you sure you want to remove $userName?"),
+                                                actions: [
+                                                  TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: Text("Cancel")),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      removeMember(memberId);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    child: Text("Remove",
+                                                        style: TextStyle(
+                                                            color: Colors.red)),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        )
+                                      : null,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            UserProfileScreen(userId: memberId),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+              ),
+              if (isMember && !isAdmin)
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Leave Community"),
+                          content: Text(
+                              "Are you sure you want to leave this community?"),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text("Cancel")),
+                            TextButton(
+                              onPressed: () {
+                                leaveCommunity();
+                                Navigator.pop(context);
+                              },
+                              child: Text("Leave",
+                                  style: TextStyle(color: Colors.red)),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child:
+                        Text("Leave Community", style: TextStyle(fontSize: 16)),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

@@ -92,72 +92,153 @@ class _CreateCommunityState extends State<CreateCommunity> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Create Community")),
-      body: Padding(
+      appBar: AppBar(
+        title: Text("Create Community"),
+        backgroundColor: Colors.deepPurple,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
+            // 🔹 Community Image
             GestureDetector(
               onTap: pickImage,
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
-                child: _imageFile == null ? Icon(Icons.camera_alt, size: 40) : null,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.grey[200],
+                  border: Border.all(color: Colors.deepPurple, width: 2),
+                ),
+                child: _imageFile != null
+                    ? ClipOval(
+                        child: Image.file(_imageFile!, fit: BoxFit.cover),
+                      )
+                    : Icon(Icons.camera_alt, size: 40, color: Colors.deepPurple),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
+
+            // 🔹 Community Name
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: "Community Name"),
+              decoration: InputDecoration(
+                labelText: "Community Name",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                prefixIcon: Icon(Icons.group, color: Colors.deepPurple),
+              ),
             ),
+            SizedBox(height: 15),
+
+            // 🔹 Community Description
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(labelText: "Description"),
+              decoration: InputDecoration(
+                labelText: "Description",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                prefixIcon: Icon(Icons.description, color: Colors.deepPurple),
+              ),
               maxLines: 3,
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
 
-            // Public/Private Selection
-            Row(
-              children: [
-                Text("Type:"),
-                Radio(
-                  value: "public",
-                  groupValue: _communityType,
-                  onChanged: (value) {
-                    setState(() {
-                      _communityType = value.toString();
-                    });
-                  },
-                ),
-                Text("Public"),
-                Radio(
-                  value: "private",
-                  groupValue: _communityType,
-                  onChanged: (value) {
-                    setState(() {
-                      _communityType = value.toString();
-                    });
-                  },
-                ),
-                Text("Private"),
-              ],
+            // 🔹 Public/Private Toggle
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Public Option
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _communityType = "public";
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: _communityType == "public" ? Colors.deepPurple : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "Public",
+                        style: TextStyle(
+                          color: _communityType == "public" ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Private Option
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _communityType = "private";
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: _communityType == "private" ? Colors.deepPurple : Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "Private",
+                        style: TextStyle(
+                          color: _communityType == "private" ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+            SizedBox(height: 20),
 
-            // Password Field (only for private)
+            // 🔹 Password Field (only for private)
             if (_communityType == "private")
               TextField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: "Password"),
+                decoration: InputDecoration(
+                  labelText: "Password",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  prefixIcon: Icon(Icons.lock, color: Colors.deepPurple),
+                ),
                 obscureText: true,
               ),
-
             SizedBox(height: 20),
+
+            // 🔹 Create Button
             _isLoading
                 ? CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: createCommunity,
-                    child: Text("Create"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      "Create Community",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
           ],
         ),
