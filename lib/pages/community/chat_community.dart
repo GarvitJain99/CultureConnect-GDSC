@@ -23,12 +23,11 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   File? _selectedImage;
   String currentUserId = "";
-  String? _replyingToMessageId; // Track the message being replied to
-  Map<String, dynamic>? _replyingToMessage; // Store the replied-to message data
-  String? _highlightedMessageId; // Track the currently highlighted message
-  Timer? _highlightTimer; // Timer to remove the highlight
-  final ScrollController _scrollController =
-      ScrollController(); // Scroll controller
+  String? _replyingToMessageId;
+  Map<String, dynamic>? _replyingToMessage;
+  String? _highlightedMessageId;
+  Timer? _highlightTimer;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -43,9 +42,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     super.dispose();
   }
 
-  // Function to generate a unique color based on the user's ID
   Color getUserColor(String userId) {
-    // Use a hash of the user ID to generate a consistent color
     int hash = userId.hashCode;
     return Colors.primaries[hash % Colors.primaries.length].withOpacity(0.8);
   }
@@ -55,13 +52,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       _highlightedMessageId = messageId;
     });
 
-    // Cancel any existing timer
     _highlightTimer?.cancel();
 
-    // Scroll to the highlighted message
     _scrollToIndex(index);
 
-    // Set a new timer to remove the highlight after 3 seconds
     _highlightTimer = Timer(Duration(seconds: 3), () {
       setState(() {
         _highlightedMessageId = null;
@@ -70,11 +64,9 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   }
 
   void _scrollToIndex(int index) {
-    // Calculate the offset to scroll to the specific message
-    final double itemHeight = 100; // Approximate height of each message
+    final double itemHeight = 100;
     final double offset = index * itemHeight;
 
-    // Scroll to the calculated offset
     _scrollController.animateTo(
       _scrollController.position.maxScrollExtent - offset,
       duration: Duration(milliseconds: 500),
@@ -82,19 +74,44 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     );
   }
 
-  Future<void> sendMessage(
-      {String? imageUrl, Map<String, dynamic>? poll}) async {
+  void _viewImage(BuildContext context, String imageUrl) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Hero(
+                tag: imageUrl,
+                child: Image.network(imageUrl),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> sendMessage({String? imageUrl, Map<String, dynamic>? poll}) async {
     try {
-      if (_messageController.text.trim().isEmpty &&
-          imageUrl == null &&
-          poll == null) {
-        print("Message is empty and no image/poll provided.");
+      if (_messageController.text.trim().isEmpty && imageUrl == null && poll == null) {
         return;
       }
 
       String userId = _auth.currentUser!.uid;
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(userId).get();
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
       String userName = userDoc['name'];
 
       await _firestore
@@ -106,11 +123,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
         'senderId': userId,
         'senderName': userName,
         'timestamp': FieldValue.serverTimestamp(),
-        'type': imageUrl != null
-            ? 'image'
-            : poll != null
-                ? 'poll'
-                : 'text',
+        'type': imageUrl != null ? 'image' : poll != null ? 'poll' : 'text',
         'replyTo': _replyingToMessageId,
         'poll': poll,
       });
@@ -145,8 +158,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   }
 
   Future<void> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile == null) return;
 
     File imageFile = File(pickedFile.path);
@@ -202,8 +214,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.deepPurple, width: 2),
+                          borderSide: BorderSide(color: Colors.deepPurple, width: 2),
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -222,8 +233,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.deepPurple, width: 2),
+                              borderSide: BorderSide(color: Colors.deepPurple, width: 2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
@@ -242,8 +252,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
                       child: Text(
                         "Add Option",
@@ -311,12 +320,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
 
   void _startReply(Map<String, dynamic> message, int index) {
     setState(() {
-      _replyingToMessageId =
-          message['id']; // Set the message ID being replied to
-      _replyingToMessage = message; // Store the replied-to message data
+      _replyingToMessageId = message['id'];
+      _replyingToMessage = message;
     });
 
-    // Highlight and scroll to the replied-to message
     if (message['replyTo'] != null) {
       _highlightMessage(message['replyTo'], index);
     }
@@ -344,12 +351,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       if (poll != null) {
         List<dynamic> options = poll['options'];
 
-        // Remove user's vote from all options
         for (var option in options) {
           option['votes'].remove(userId);
         }
 
-        // Add user's vote to the selected option
         options[optionIndex]['votes'].add(userId);
 
         await messageRef.update({'poll': poll});
@@ -412,12 +417,10 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     controller: _scrollController,
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
-                      var message =
-                          messages[index].data() as Map<String, dynamic>;
+                      var message = messages[index].data() as Map<String, dynamic>;
                       bool isMe = message['senderId'] == _auth.currentUser!.uid;
                       Color userColor = getUserColor(message['senderId']);
-                      bool isHighlighted =
-                          messages[index].id == _highlightedMessageId;
+                      bool isHighlighted = messages[index].id == _highlightedMessageId;
 
                       return GestureDetector(
                         onTap: () {
@@ -426,8 +429,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                           }
                         },
                         child: Container(
-                          margin:
-                              EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                          margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                           padding: EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: isMe
@@ -460,8 +462,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                       .doc(message['replyTo'])
                                       .get(),
                                   builder: (context, snapshot) {
-                                    if (snapshot.hasData &&
-                                        snapshot.data!.exists) {
+                                    if (snapshot.hasData && snapshot.data!.exists) {
                                       var repliedToMessage = snapshot.data!
                                           .data() as Map<String, dynamic>;
                                       return Container(
@@ -469,8 +470,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                         margin: EdgeInsets.only(bottom: 8),
                                         decoration: BoxDecoration(
                                           color: userColor.withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(8),
                                           border: Border(
                                             left: BorderSide(
                                               color: userColor,
@@ -494,8 +494,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                               repliedToMessage['text'],
                                               style: TextStyle(
                                                 fontStyle: FontStyle.italic,
-                                                color:
-                                                    userColor.withOpacity(0.8),
+                                                color: userColor.withOpacity(0.8),
                                               ),
                                             ),
                                           ],
@@ -510,21 +509,16 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CircleAvatar(
-                                    backgroundImage: message[
-                                                'senderProfilePic'] !=
-                                            null
-                                        ? NetworkImage(
-                                            message['senderProfilePic'])
-                                        : AssetImage(
-                                                'assets/default_profile.png')
+                                    backgroundImage: message['senderProfilePic'] != null
+                                        ? NetworkImage(message['senderProfilePic'])
+                                        : AssetImage('assets/default_profile.png')
                                             as ImageProvider,
                                     radius: 20,
                                   ),
                                   SizedBox(width: 8),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           message['senderName'],
@@ -535,15 +529,23 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                         ),
                                         SizedBox(height: 4),
                                         if (message['type'] == 'image')
-                                          Image.network(
-                                            message['text'],
-                                            width: 200,
-                                            height: 200,
-                                            fit: BoxFit.cover,
+                                          GestureDetector(
+                                            onTap: () => _viewImage(context, message['text']),
+                                            child: Hero(
+                                              tag: message['text'],
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(8),
+                                                child: Image.network(
+                                                  message['text'],
+                                                  width: 200,
+                                                  height: 200,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
                                           )
                                         else if (message['type'] == 'poll')
-                                          _buildPollWidget(
-                                              message, messages[index].id)
+                                          _buildPollWidget(message, messages[index].id)
                                         else
                                           Text(message['text']),
                                       ],
@@ -551,8 +553,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                   ),
                                   if (isMe)
                                     IconButton(
-                                      icon:
-                                          Icon(Icons.delete, color: userColor),
+                                      icon: Icon(Icons.delete, color: userColor),
                                       onPressed: () {
                                         showDialog(
                                           context: context,
@@ -568,8 +569,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                               ),
                                               TextButton(
                                                 onPressed: () {
-                                                  deleteMessage(
-                                                      messages[index].id);
+                                                  deleteMessage(messages[index].id);
                                                   Navigator.pop(context);
                                                 },
                                                 child: Text("Delete",
@@ -626,10 +626,17 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
               child: Row(
                 children: [
                   IconButton(
-                      icon: Icon(Icons.poll), onPressed: openPollCreation),
+                    icon: Icon(Icons.poll),
+                    onPressed: openPollCreation,
+                  ),
                   IconButton(
-                      icon: Icon(Icons.event), onPressed: openEventCreation),
-                  IconButton(icon: Icon(Icons.image), onPressed: pickImage),
+                    icon: Icon(Icons.event),
+                    onPressed: openEventCreation,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.image),
+                    onPressed: pickImage,
+                  ),
                   Expanded(
                     child: TextField(
                       controller: _messageController,
