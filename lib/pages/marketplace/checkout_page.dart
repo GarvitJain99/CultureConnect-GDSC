@@ -6,7 +6,20 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CheckoutPage extends StatefulWidget {
-  const CheckoutPage({super.key});
+  final String? buyNowItemId;
+  final String? buyNowItemName;
+  final String? buyNowItemImageUrl;
+  final double? buyNowItemPrice;
+  final int? buyNowItemQuantity;
+
+  const CheckoutPage({
+    super.key,
+    this.buyNowItemId,
+    this.buyNowItemName,
+    this.buyNowItemImageUrl,
+    this.buyNowItemPrice,
+    this.buyNowItemQuantity,
+  });
 
   @override
   _CheckoutPageState createState() => _CheckoutPageState();
@@ -33,10 +46,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String pincode = '';
   double? _latitude;
   double? _longitude;
-
-  bool _isFormValid() {
-    return _formKey.currentState?.validate() ?? false;
-  }
 
   @override
   void initState() {
@@ -65,18 +74,34 @@ class _CheckoutPageState extends State<CheckoutPage> {
     String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
-    final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
-    final cartRef = userRef.collection('cart');
-    final snapshot = await cartRef.get();
-
     double total = 0;
     List<Map<String, dynamic>> items = [];
 
-    for (var doc in snapshot.docs) {
-      var data = doc.data();
-      data['id'] = doc.id;
-      total += (data['price'] as num) * (data['quantity'] as int);
-      items.add(data);
+    if (widget.buyNowItemId != null &&
+        widget.buyNowItemName != null &&
+        widget.buyNowItemImageUrl != null &&
+        widget.buyNowItemPrice != null &&
+        widget.buyNowItemQuantity != null) {
+      total = widget.buyNowItemPrice! * widget.buyNowItemQuantity!;
+      items.add({
+        'id': widget.buyNowItemId,
+        'name': widget.buyNowItemName,
+        'imageUrl': widget.buyNowItemImageUrl,
+        'price': widget.buyNowItemPrice,
+        'quantity': widget.buyNowItemQuantity,
+      });
+    } else {
+      // Regular cart checkout flow: fetch all items from the cart
+      final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final cartRef = userRef.collection('cart');
+      final snapshot = await cartRef.get();
+
+      for (var doc in snapshot.docs) {
+        var data = doc.data();
+        data['id'] = doc.id;
+        total += (data['price'] as num) * (data['quantity'] as int);
+        items.add(data);
+      }
     }
 
     setState(() {
@@ -155,7 +180,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           'phone': _phoneController.text,
           'street': _streetController.text,
           'city': _cityController.text,
-          'state': _stateController.text,
+          'state': _cityController.text,
           'pincode': _pincodeController.text,
           'full_address': _locationController.text,
           'latitude': _latitude,
@@ -168,7 +193,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
 
     try {
-      await _clearCart(user.uid);
+      await _clearCart(user.uid); // Clear the cart after any purchase
     } catch (e) {
       print("Error clearing cart: $e");
     }
@@ -264,7 +289,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your phone number';
                   }
-                  if (!RegExp(r'^{10}$').hasMatch(value)) {
+                  if (value.length != 10) {
                     return 'Please enter a valid 10-digit phone number';
                   }
                   return null;
@@ -298,15 +323,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           selectedState = selectedLocation['state'];
                           selectedCity = selectedLocation['city'];
                           street =
-                              selectedLocation['street'] ?? ''; // Get street
+                              selectedLocation['street'] ?? '';
                           pincode =
-                              selectedLocation['pincode'] ?? ''; // Get pincode
+                              selectedLocation['pincode'] ?? '';
 
                           _streetController.text = street;
                           _stateController.text = selectedState ?? '';
                           _cityController.text = selectedCity ?? '';
                           _pincodeController.text =
-                              pincode; // Update pincode controller
+                              pincode;
                         });
                       }
                     },
@@ -382,13 +407,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
                 keyboardType: TextInputType.number,
                 onSaved: (val) => pincode = val!,
-                // No need for onChanged here as it's fetched
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your pincode';
                   }
-                  if (!RegExp(r'^{6}$').hasMatch(value)) {
-                    return 'Please enter a valid 6-digit pincode';
+                  if (value.length != 6) {
+                    return 'Please enter a valid 6-digit phone number';
                   }
                   return null;
                 },
@@ -413,9 +437,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Total: ₹${totalAmount.toStringAsFixed(2)}',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                       ElevatedButton(
-                        onPressed: _isFormValid() ? _startPayment : null,
+                        onPressed: _startPayment,
                         child: Text('Proceed to Pay'),
                       ),
                     ],

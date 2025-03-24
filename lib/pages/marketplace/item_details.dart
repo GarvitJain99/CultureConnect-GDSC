@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'checkout_page.dart';
 
-class ItemDetailsPage extends StatelessWidget {
+class ItemDetailsPage extends StatefulWidget {
   final String itemId;
   const ItemDetailsPage({super.key, required this.itemId});
+
+  @override
+  State<ItemDetailsPage> createState() => _ItemDetailsPageState();
+}
+
+class _ItemDetailsPageState extends State<ItemDetailsPage> {
+  int _currentImageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +43,22 @@ class ItemDetailsPage extends StatelessWidget {
           ),
         ),
         child: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance.collection('marketplace').doc(itemId).get(),
+          future: FirebaseFirestore.instance.collection('marketplace').doc(widget.itemId).get(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
 
             var item = snapshot.data!;
+            Map<String, dynamic> data = item.data() as Map<String, dynamic>;
+
+            List<String> imageUrls = [];
+            if (data.containsKey('imageUrls') && data['imageUrls'] is List) {
+              imageUrls = (data['imageUrls'] as List<dynamic>).cast<String>();
+            } else if (data.containsKey('imageUrl') && data['imageUrl'] is String) {
+              imageUrls = [data['imageUrl'] as String];
+            }
+
             return SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -53,6 +70,73 @@ class ItemDetailsPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            if (imageUrls.isNotEmpty)
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.4,
+                                width: double.infinity,
+                                child: Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    PageView.builder(
+                                      itemCount: imageUrls.length,
+                                      onPageChanged: (index) {
+                                        setState(() {
+                                          _currentImageIndex = index;
+                                        });
+                                      },
+                                      itemBuilder: (context, index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            _showImageDialog(context, imageUrls[index]);
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(16.0),
+                                              child: Image.network(
+                                                imageUrls[index],
+                                                fit: BoxFit.contain, // Changed BoxFit.cover to BoxFit.contain
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return const Icon(Icons.image_not_supported, size: 100, color: Colors.white);
+                                                },
+                                                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                  if (loadingProgress == null) return child;
+                                                  return Center(
+                                                    child: CircularProgressIndicator(
+                                                      value: loadingProgress.expectedTotalBytes != null
+                                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                          : null,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    if (imageUrls.length > 1)
+                                      Positioned(
+                                        bottom: 10,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: imageUrls.asMap().entries.map((entry) {
+                                            int index = entry.key;
+                                            return Container(
+                                              width: 8.0,
+                                              height: 8.0,
+                                              margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: _currentImageIndex == index ? Colors.white : Colors.white.withOpacity(0.5),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                 horizontal: MediaQuery.of(context).size.width * 0.05,
@@ -60,23 +144,9 @@ class ItemDetailsPage extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Center(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(16.0),
-                                      child: Image.network(
-                                        item['imageUrl'],
-                                        height: MediaQuery.of(context).size.height * 0.35,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return const Icon(Icons.image_not_supported, size: 100, color: Colors.white);
-                                        },
-                                      ),
-                                    ),
-                                  ),
                                   const SizedBox(height: 20),
                                   Text(
-                                    item['name'],
+                                    data['name'],
                                     style: TextStyle(
                                       fontSize: MediaQuery.of(context).size.width * 0.07,
                                       fontWeight: FontWeight.bold,
@@ -85,7 +155,7 @@ class ItemDetailsPage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 10),
                                   Text(
-                                    "₹${item['price']}",
+                                    "₹${data['price']}",
                                     style: TextStyle(
                                       fontSize: MediaQuery.of(context).size.width * 0.06,
                                       fontWeight: FontWeight.w600,
@@ -94,7 +164,7 @@ class ItemDetailsPage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 15),
                                   Text(
-                                    item['description'] ?? "No description available",
+                                    data['description'] ?? "No description available",
                                     style: TextStyle(
                                       fontSize: MediaQuery.of(context).size.width * 0.045,
                                       color: Colors.white70,
@@ -106,13 +176,12 @@ class ItemDetailsPage extends StatelessWidget {
                               ),
                             ),
                             const Spacer(), // Ensures buttons stay at the bottom
-
                             StreamBuilder<DocumentSnapshot>(
                               stream: FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(userId)
                                   .collection('cart')
-                                  .doc(itemId)
+                                  .doc(widget.itemId)
                                   .snapshots(),
                               builder: (context, cartSnapshot) {
                                 int quantity = 0;
@@ -125,50 +194,105 @@ class ItemDetailsPage extends StatelessWidget {
                                     horizontal: MediaQuery.of(context).size.width * 0.05,
                                     vertical: MediaQuery.of(context).size.height * 0.02,
                                   ),
-                                  child: Column(
+                                  child: Row(
                                     children: [
-                                      quantity == 0
-                                          ? ElevatedButton(
-                                              onPressed: () => addToCart(userId, item.id, item['name'], item['imageUrl'], double.parse(item['price'].toString())),
-                                              style: ElevatedButton.styleFrom(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 14,
-                                                    horizontal: MediaQuery.of(context).size.width * 0.3),
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                                backgroundColor: Colors.white,
+                                      Expanded(
+                                        child: quantity == 0
+                                            ? ElevatedButton(
+                                                onPressed: () => addToCart(userId, item.id, data['name'], imageUrls.isNotEmpty ? imageUrls.first : '', double.parse(data['price'].toString())),
+                                                style: ElevatedButton.styleFrom(
+                                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                                  backgroundColor: Colors.white,
+                                                ),
+                                                child: const Text(
+                                                  "Add to Cart",
+                                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                                                ),
+                                              )
+                                            : Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                children: [
+                                                  IconButton(
+                                                    icon: const Icon(Icons.remove, color: Colors.white),
+                                                    onPressed: () {
+                                                      if (quantity > 1) {
+                                                        updateCartQuantity(userId, item.id, quantity - 1);
+                                                      } else {
+                                                        removeFromCart(userId, item.id);
+                                                      }
+                                                    },
+                                                  ),
+                                                  Text(
+                                                    quantity.toString(),
+                                                    style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                                                  ),
+                                                  IconButton(
+                                                    icon: const Icon(Icons.add, color: Colors.white),
+                                                    onPressed: () {
+                                                      updateCartQuantity(userId, item.id, quantity + 1);
+                                                    },
+                                                  ),
+                                                ],
                                               ),
-                                              child: const Text(
-                                                "Add to Cart",
-                                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            final String? userId = FirebaseAuth.instance.currentUser?.uid;
+                                            if (userId == null) return;
+
+                                            final cartRef = FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(userId)
+                                                .collection('cart')
+                                                .doc(item.id);
+                                            final cartSnapshot = await cartRef.get();
+
+                                            int buyNowQuantity = quantity > 0 ? quantity : 1;
+
+                                            if (!cartSnapshot.exists) {
+                                              // Item not in cart, add it
+                                              await addToCart(
+                                                userId,
+                                                item.id,
+                                                data['name'],
+                                                imageUrls.isNotEmpty ? imageUrls.first : '',
+                                                double.parse(data['price'].toString()),
+                                              );
+                                              buyNowQuantity = 1; // Set quantity to 1 for buy now if not in cart
+                                            } else {
+                                              // Item in cart, update quantity to current selected quantity
+                                              await updateCartQuantity(userId, item.id, quantity);
+                                              buyNowQuantity = quantity;
+                                            }
+
+                                            // Navigate to CheckoutPage
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => CheckoutPage(
+                                                  buyNowItemId: item.id,
+                                                  buyNowItemName: data['name'],
+                                                  buyNowItemImageUrl: imageUrls.isNotEmpty ? imageUrls.first : '',
+                                                  buyNowItemPrice: double.parse(data['price'].toString()),
+                                                  buyNowItemQuantity: buyNowQuantity,
+                                                ),
                                               ),
-                                            )
-                                          : Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              children: [
-                                                IconButton(
-                                                  icon: const Icon(Icons.remove, color: Colors.white),
-                                                  onPressed: () {
-                                                    if (quantity > 1) {
-                                                      updateCartQuantity(userId, itemId, quantity - 1);
-                                                    } else {
-                                                      removeFromCart(userId, itemId);
-                                                    }
-                                                  },
-                                                ),
-                                                Text(
-                                                  quantity.toString(),
-                                                  style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
-                                                ),
-                                                IconButton(
-                                                  icon: const Icon(Icons.add, color: Colors.white),
-                                                  onPressed: () {
-                                                    updateCartQuantity(userId, itemId, quantity + 1);
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                      const SizedBox(height: 10),
-                                      
+                                            );
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsets.symmetric(vertical: 14),
+                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                          child: const Text(
+                                            "Buy Now",
+                                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 );
@@ -214,7 +338,51 @@ class ItemDetailsPage extends StatelessWidget {
     await cartRef.delete();
   }
 
-//   void buyNow(BuildContext context, String userId, String itemId, String name, String imageUrl, double price) async {
-//     Navigator.pushNamed(context, '/checkout');
-//   }
- }
+  void _showImageDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          content: Stack(
+            children: <Widget>[
+              InteractiveViewer(
+                panEnabled: true, // Enable panning
+                minScale: 0.5,
+                maxScale: 5.0,
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                    return const Center(child: Text('Could not load image'));
+                  },
+                ),
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: IconButton(
+                  color: Colors.white,
+                  icon: const Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
