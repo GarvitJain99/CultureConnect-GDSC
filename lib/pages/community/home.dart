@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'chat_community.dart';
 import 'create_community.dart';
+import 'joined_community.dart';
 
 class CommunityHomeScreen extends StatefulWidget {
   @override
@@ -78,13 +79,22 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double textScaleFactor = MediaQuery.of(context).textScaleFactor;
+
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text("Communities", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          "Communities",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.05,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add, color: const Color.fromARGB(255, 26, 18, 18)),
+            icon: Icon(Icons.add, size: screenWidth * 0.07, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
@@ -97,12 +107,15 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('communities').snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
 
           var communities = snapshot.data!.docs;
 
           return ListView.builder(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenWidth * 0.04,
+              vertical: screenHeight * 0.02,
+            ),
             itemCount: communities.length,
             itemBuilder: (context, index) {
               var community = communities[index];
@@ -112,7 +125,7 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
               bool isPrivate = data['type'] == "private";
 
               return Card(
-                margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                margin: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -130,51 +143,54 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
                     }
                   },
                   child: Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.all(screenWidth * 0.04),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Community Image
                         CircleAvatar(
                           backgroundImage: imageUrl.isNotEmpty
                               ? NetworkImage(imageUrl)
                               : AssetImage('assets/default_community.png')
                                   as ImageProvider,
-                          radius: 30,
+                          radius: screenWidth * 0.08,
                         ),
-                        SizedBox(width: 16),
+                        SizedBox(width: screenWidth * 0.04),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Community Name and Lock Icon
                               Row(
                                 children: [
-                                  Text(
-                                    data['name'],
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                  Expanded(
+                                    child: Text(
+                                      data['name'],
+                                      style: TextStyle(
+                                        fontSize: screenWidth * 0.045,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
                                   if (isPrivate)
                                     Icon(Icons.lock,
-                                        color: Colors.red, size: 16),
+                                        color: Colors.red,
+                                        size: screenWidth * 0.04),
                                 ],
                               ),
-                              SizedBox(height: 4),
-                              // Community Description
+                              SizedBox(height: screenHeight * 0.005),
                               Text(
                                 data['description'],
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: screenWidth * 0.035,
                                   color: Colors.grey[600],
                                 ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
                               ),
                             ],
                           ),
                         ),
-                        // Join/Open Button
+                        SizedBox(width: screenWidth * 0.02),
                         ElevatedButton(
                           onPressed: () async {
                             if (isMember) {
@@ -190,15 +206,21 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                isMember ? Colors.blue : Colors.green,
+                            backgroundColor: isMember ? Colors.blue : Colors.green,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.05,
+                              vertical: screenHeight * 0.015,
                             ),
                           ),
                           child: Text(
                             isMember ? "Open" : "Join",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenWidth * 0.04,
+                            ),
                           ),
                         ),
                       ],
@@ -207,6 +229,16 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
                 ),
               );
             },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        child: Icon(Icons.group, color: Colors.white, size: screenWidth * 0.07),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => JoinedCommunityScreen()),
           );
         },
       ),
