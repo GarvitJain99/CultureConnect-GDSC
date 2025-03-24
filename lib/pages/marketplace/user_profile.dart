@@ -3,7 +3,7 @@ import 'package:cultureconnect/pages/marketplace/sell_item.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 
 class UserProfilePage extends StatelessWidget {
   const UserProfilePage({super.key});
@@ -17,9 +17,13 @@ class UserProfilePage extends StatelessWidget {
       body: userId == null
           ? const Center(child: Text("User not logged in"))
           : FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance.collection('users').doc(userId).get(),
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(userId)
+                  .get(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData)
+                  return const Center(child: CircularProgressIndicator());
 
                 var userData = snapshot.data!;
                 return SingleChildScrollView(
@@ -33,17 +37,24 @@ class UserProfilePage extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 50,
-                              backgroundImage: NetworkImage(userData['profileImage'] ?? ""),
+                              backgroundImage:
+                                  NetworkImage(userData['profileImage'] ?? ""),
                             ),
                             const SizedBox(height: 10),
-                            Text(userData['name'], style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                            Text(userData['email'], style: const TextStyle(fontSize: 16, color: Colors.grey)),
+                            Text(userData['name'],
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            Text(userData['email'],
+                                style: const TextStyle(
+                                    fontSize: 16, color: Colors.grey)),
                             const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => const SellItemPage()),
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SellItemPage()),
                                 );
                               },
                               child: const Text("Sell an Item"),
@@ -53,29 +64,59 @@ class UserProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      const Text("Your Listed Items", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text("Your Listed Items",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       StreamBuilder(
-                        stream: FirebaseFirestore.instance.collection('users').doc(userId).collection('listed_items').snapshots(),
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userId)
+                            .collection('listed_items')
+                            .snapshots(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                          if (!snapshot.hasData)
+                            return const Center(
+                                child: CircularProgressIndicator());
                           var items = snapshot.data!.docs;
-                          if (items.isEmpty) return const Text("No items listed yet.");
+                          if (items.isEmpty)
+                            return const Text("No items listed yet.");
                           return ListView.builder(
-                            shrinkWrap: true, 
-                            physics: const NeverScrollableScrollPhysics(), 
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: items.length,
                             itemBuilder: (context, index) {
                               var item = items[index];
+                              // Access the imageUrls list
+                              List<String>? imageUrls =
+                                  (item['imageUrls'] as List<dynamic>?)
+                                      ?.cast<String>();
+                              String? firstImageUrl;
+
+                              // Check if the list is not null and not empty
+                              if (imageUrls != null && imageUrls.isNotEmpty) {
+                                firstImageUrl = imageUrls.first;
+                              }
+
                               return ListTile(
-                                leading: Image.network(item['imageUrl'], width: 50, height: 50, fit: BoxFit.cover),
+                                leading: firstImageUrl != null
+                                    ? Image.network(firstImageUrl,
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover)
+                                    : const SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: Icon(Icons
+                                            .image_not_supported)), 
                                 title: Text(item['name']),
                                 subtitle: Text("₹${item['price']}"),
                                 onTap: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ItemDetailsPage(itemId: item.id),
+                                      builder: (context) =>
+                                          ItemDetailsPage(itemId: item.id),
                                     ),
                                   );
                                 },
@@ -88,7 +129,9 @@ class UserProfilePage extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Ongoing Orders Section
-                      const Text("Ongoing Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text("Ongoing Orders",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       StreamBuilder(
                         stream: FirebaseFirestore.instance
@@ -98,19 +141,26 @@ class UserProfilePage extends StatelessWidget {
                             .orderBy('timestamp', descending: true)
                             .snapshots(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                            return const Text("No ongoing orders.", style: TextStyle(color: Colors.grey));
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return const Text("No ongoing orders.",
+                                style: TextStyle(color: Colors.grey));
                           }
                           var orders = snapshot.data!.docs;
                           return ListView.builder(
-                            shrinkWrap: true, // Added to allow it to be in a Column
-                            physics: const NeverScrollableScrollPhysics(), // To disable its own scrolling
+                            shrinkWrap:
+                                true, // Added to allow it to be in a Column
+                            physics:
+                                const NeverScrollableScrollPhysics(), // To disable its own scrolling
                             itemCount: orders.length,
                             itemBuilder: (context, index) {
                               var order = orders[index];
-                              var items = List<Map<String, dynamic>>.from(order['items']);
-                              final DateTime orderDate = (order['timestamp'] as Timestamp).toDate();
-                              final String formattedDate = DateFormat('dd-MM-yyyy').format(orderDate);
+                              var items = List<Map<String, dynamic>>.from(
+                                  order['items']);
+                              final DateTime orderDate =
+                                  (order['timestamp'] as Timestamp).toDate();
+                              final String formattedDate =
+                                  DateFormat('dd-MM-yyyy').format(orderDate);
 
                               return Card(
                                 elevation: 2,
@@ -118,18 +168,32 @@ class UserProfilePage extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
-                                      ...items.map((item) => Text("- ${item['name']} (x${item['quantity']})")).toList(),
+                                      const Text("Items:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      ...items
+                                          .map((item) => Text(
+                                              "- ${item['name']} (x${item['quantity']})"))
+                                          .toList(),
                                       const SizedBox(height: 5),
-                                      Text("Total Price: ₹${order['total_price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                                      Text("Date: $formattedDate", style: const TextStyle(fontWeight: FontWeight.bold)),
-                                      Text("Order ID: ${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      Text(
+                                          "Total Price: ₹${order['total_price']}",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text("Date: $formattedDate",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text("Order ID: ${order.id}",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 5),
                                       const SizedBox(height: 10),
                                       ElevatedButton(
-                                        onPressed: () => _markOrderAsCompleted(userId, order),
+                                        onPressed: () => _markOrderAsCompleted(
+                                            userId, order),
                                         child: const Text("Mark as Completed"),
                                       ),
                                     ],
@@ -144,7 +208,9 @@ class UserProfilePage extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Previous Orders Section
-                      const Text("Previous Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text("Previous Orders",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
                       StreamBuilder(
                         stream: FirebaseFirestore.instance
@@ -154,8 +220,10 @@ class UserProfilePage extends StatelessWidget {
                             .orderBy('timestamp', descending: true)
                             .snapshots(),
                         builder: (context, snapshot) {
-                          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                            return const Text("No previous orders.", style: TextStyle(color: Colors.grey));
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return const Text("No previous orders.",
+                                style: TextStyle(color: Colors.grey));
                           }
                           var orders = snapshot.data!.docs;
                           return ListView.builder(
@@ -164,9 +232,12 @@ class UserProfilePage extends StatelessWidget {
                             itemCount: orders.length,
                             itemBuilder: (context, index) {
                               var order = orders[index];
-                              var items = List<Map<String, dynamic>>.from(order['items'] ?? []);
-                              final DateTime orderDate = (order['timestamp'] as Timestamp).toDate();
-                              final String formattedDate = DateFormat('dd-MM-yyyy').format(orderDate);
+                              var items = List<Map<String, dynamic>>.from(
+                                  order['items'] ?? []);
+                              final DateTime orderDate =
+                                  (order['timestamp'] as Timestamp).toDate();
+                              final String formattedDate =
+                                  DateFormat('dd-MM-yyyy').format(orderDate);
 
                               return Card(
                                 elevation: 2,
@@ -174,14 +245,27 @@ class UserProfilePage extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
-                                      ...items.map((item) => Text("- ${item['name']} (x${item['quantity']})")).toList(),
+                                      const Text("Items:",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      ...items
+                                          .map((item) => Text(
+                                              "- ${item['name']} (x${item['quantity']})"))
+                                          .toList(),
                                       const SizedBox(height: 5),
-                                      Text("Total Price: ₹${order['total_price']}", style: const TextStyle(fontWeight: FontWeight.bold)),
-                                      Text("Date: $formattedDate", style: const TextStyle(fontWeight: FontWeight.bold)),
-                                      Text("Order ID: ${order.id}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      Text(
+                                          "Total Price: ₹${order['total_price']}",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text("Date: $formattedDate",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      Text("Order ID: ${order.id}",
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 5),
                                     ],
                                   ),
@@ -204,7 +288,9 @@ class UserProfilePage extends StatelessWidget {
 
     try {
       // Move order to "previous_orders"
-      await userRef.collection('previous_orders').add(Map<String, dynamic>.from(order.data() as Map));
+      await userRef
+          .collection('previous_orders')
+          .add(Map<String, dynamic>.from(order.data() as Map));
 
       // Remove order from "ongoing_orders"
       await userRef.collection('ongoing_orders').doc(order.id).delete();

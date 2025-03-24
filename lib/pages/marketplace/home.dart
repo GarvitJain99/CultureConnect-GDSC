@@ -17,6 +17,9 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
   String _searchQuery = '';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  String? _tempSelectedCategory;
+  String? _tempSelectedPriceRange;
+
   final List<String> _categories = [
     'All',
     'Electronics',
@@ -35,6 +38,14 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    // Initialize temporary variables with current filter values
+    _tempSelectedCategory = _selectedCategory;
+    _tempSelectedPriceRange = _selectedPriceRange;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
@@ -44,7 +55,7 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFFFA726), Color(0xFFB71C1C)],
+              colors: [Color(0xFFFFA726), Color.fromARGB(176, 184, 48, 20)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -83,7 +94,7 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
           ),
         ),
       ),
-      drawer: Drawer(
+      endDrawer: Drawer(
         child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -93,10 +104,9 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
             ),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            padding: EdgeInsets.zero,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const SizedBox(height: 90),
               const Text("Select a Category",
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.white)),
@@ -107,7 +117,7 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
                   filled: true,
                   fillColor: Colors.white,
                 ),
-                value: _selectedCategory,
+                value: _tempSelectedCategory,
                 items: _categories.map((category) {
                   return DropdownMenuItem<String>(
                     value: category == 'All' ? null : category,
@@ -117,7 +127,7 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
                 }).toList(),
                 onChanged: (String? newValue) {
                   setState(() {
-                    _selectedCategory = newValue;
+                    _tempSelectedCategory = newValue;
                   });
                 },
               ),
@@ -139,20 +149,20 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
                         title: Text(range,
                             style: const TextStyle(color: Colors.white)),
                         value: range,
-                        groupValue: _selectedPriceRange,
+                        groupValue: _tempSelectedPriceRange,
                         onChanged: (String? value) {
                           setState(() {
-                            if (_selectedPriceRange == value) {
+                            if (value == _tempSelectedPriceRange) {
                               print(
                                   "Price range '$value' is being unselected.");
-                              _selectedPriceRange = null;
+                              _tempSelectedPriceRange = null;
                               print(
-                                  "New selected price range: $_selectedPriceRange");
+                                  "New selected price range: $_tempSelectedPriceRange");
                             } else {
                               print("Price range '$value' is being selected.");
-                              _selectedPriceRange = value;
+                              _tempSelectedPriceRange = value;
                               print(
-                                  "New selected price range: $_selectedPriceRange");
+                                  "New selected price range: $_tempSelectedPriceRange");
                             }
                           });
                         },
@@ -164,9 +174,25 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
+                  setState(() {
+                    _selectedCategory = _tempSelectedCategory;
+                    _selectedPriceRange = _tempSelectedPriceRange;
+                  });
                   Navigator.pop(context);
                 },
                 child: const Text('Apply Filters'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _tempSelectedCategory = null;
+                    _tempSelectedPriceRange = null;
+                  });
+                },
+                child: const Text(
+                  'Clear Filters',
+                ),
               ),
             ],
           ),
@@ -182,18 +208,11 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
         ),
         child: Column(
           children: [
-            const SizedBox(height: kToolbarHeight + 30),
+            const SizedBox(height: kToolbarHeight + 35),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.filter_list, color: Colors.white),
-                    onPressed: () {
-                      _scaffoldKey.currentState?.openDrawer();
-                    },
-                  ),
-                  const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
                       decoration: const InputDecoration(
@@ -209,6 +228,13 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
                         });
                       },
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Colors.black),
+                    onPressed: () {
+                      _scaffoldKey.currentState?.openEndDrawer();
+                    },
                   ),
                 ],
               ),
@@ -267,6 +293,16 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
                       Map<String, dynamic> data =
                           item.data() as Map<String, dynamic>;
 
+                      String? firstImageUrl;
+                      List<String>? imageUrls =
+                          (data['imageUrls'] as List<dynamic>?)?.cast<String>();
+
+                      if (imageUrls != null && imageUrls.isNotEmpty) {
+                        firstImageUrl = imageUrls.first;
+                      } else {
+                        firstImageUrl = data['imageUrl'] as String?;
+                      }
+
                       return AnimatedContainer(
                         duration: Duration(milliseconds: 500 + (index * 100)),
                         curve: Curves.easeInOut,
@@ -279,14 +315,14 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
                           contentPadding: const EdgeInsets.all(4),
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: data['imageUrl'] != null &&
-                                    data['imageUrl'].isNotEmpty
+                            child: firstImageUrl != null
                                 ? Image.network(
-                                    data['imageUrl'],
+                                    firstImageUrl,
                                     width: 80,
                                     height: 80,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
+                                    errorBuilder:
+                                        (context, error, stackTrace) {
                                       return const Icon(
                                           Icons.image_not_supported,
                                           size: 50);

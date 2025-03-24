@@ -21,7 +21,7 @@ class _SellItemPageState extends State<SellItemPage> {
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
-  File? _selectedImage;
+  List<File> _selectedImages = [];
   bool _isUploading = false;
   LatLng? selectedLocation;
   String? selectedAddress;
@@ -48,11 +48,11 @@ class _SellItemPageState extends State<SellItemPage> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() => _selectedImage = File(pickedFile.path));
+    final pickedFiles = await ImagePicker().pickMultiImage();
+    setState(() {
+      _selectedImages.addAll(pickedFiles.map((file) => File(file.path)));
+    });
     }
-  }
 
   void _showImageSourceDialog() {
     showModalBottomSheet(
@@ -86,31 +86,36 @@ class _SellItemPageState extends State<SellItemPage> {
         _descriptionController.text.isEmpty ||
         _selectedCategory == null ||
         selectedAddress == null ||
-        _selectedImage == null) {
+        _selectedImages.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text("Please fill all fields and select an image")),
+            content: Text("Please fill all fields and select at least one image")),
       );
       return;
     }
 
     setState(() => _isUploading = true);
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
+    List<String> imageUrls = [];
 
     try {
-      String filePath =
-          'marketplace_images/${DateTime.now().millisecondsSinceEpoch}.jpg';
-      UploadTask uploadTask =
-          FirebaseStorage.instance.ref(filePath).putFile(_selectedImage!);
-      TaskSnapshot snapshot = await uploadTask;
-      String imageUrl = await snapshot.ref.getDownloadURL();
+      for (int i = 0; i < _selectedImages.length; i++) {
+        File image = _selectedImages[i];
+        String filePath =
+            'marketplace_images/$userId/${DateTime.now().millisecondsSinceEpoch}_$i.jpg';
+        UploadTask uploadTask =
+            FirebaseStorage.instance.ref(filePath).putFile(image);
+        TaskSnapshot snapshot = await uploadTask;
+        String imageUrl = await snapshot.ref.getDownloadURL();
+        imageUrls.add(imageUrl);
+      }
 
       DocumentReference docRef =
           await FirebaseFirestore.instance.collection('marketplace').add({
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
         'description': _descriptionController.text,
-        'imageUrl': imageUrl,
+        'imageUrls': imageUrls, // Store list of image URLs
         'category': _selectedCategory,
         'sellerId': userId,
         'location': {
@@ -128,7 +133,7 @@ class _SellItemPageState extends State<SellItemPage> {
           .set({
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
-        'imageUrl': imageUrl,
+        'imageUrls': imageUrls, // Store list of image URLs
         'status': 'active',
       });
 
@@ -146,6 +151,12 @@ class _SellItemPageState extends State<SellItemPage> {
     setState(() => _isUploading = false);
   }
 
+  void _removeImage(int index) {
+    setState(() {
+      _selectedImages.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,20 +165,59 @@ class _SellItemPageState extends State<SellItemPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: _showImageSourceDialog,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: _selectedImage == null
-                    ? const Icon(Icons.add_a_photo,
-                        size: 50, color: Colors.grey)
-                    : ClipOval(
-                        child: Image.file(_selectedImage!, fit: BoxFit.cover)),
+            SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _selectedImages.length + 1, // +1 for the add button
+                itemBuilder: (context, index) {
+                  if (index == _selectedImages.length) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: GestureDetector(
+                        onTap: _showImageSourceDialog,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: const Icon(Icons.add_a_photo,
+                              size: 40, color: Colors.grey),
+                        ),
+                      ),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey),
+                            image: DecorationImage(
+                              image: FileImage(_selectedImages[index]),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: -5,
+                          right: -5,
+                          child: IconButton(
+                            icon: const Icon(Icons.cancel, color: Colors.red),
+                            iconSize: 20,
+                            onPressed: () => _removeImage(index),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 16),

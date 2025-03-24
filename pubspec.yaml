@@ -53,6 +53,7 @@ dependencies:
   geocoding: ^3.0.0
   syncfusion_flutter_sliders: ^28.2.12
   intl: ^0.20.2
+  zxcvbn: ^1.0.0
 
 dev_dependencies:
   flutter_test:
