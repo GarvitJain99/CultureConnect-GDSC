@@ -131,7 +131,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                   radius: 60,
                                   backgroundImage: profileImage.isNotEmpty
                                       ? NetworkImage(profileImage)
-                                      : const AssetImage('assets/default_profile.png')
+                                      : const AssetImage('assets/default_profile.jpg')
                                           as ImageProvider,
                                 ),
                               ),

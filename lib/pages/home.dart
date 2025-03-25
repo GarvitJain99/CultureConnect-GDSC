@@ -1,9 +1,7 @@
-import 'package:cultureconnect/pages/dummy_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cultureconnect/pages/encyclopedia/region_selection.dart';
 import 'package:cultureconnect/tools/hor_list.dart';
 import 'package:cultureconnect/tools/button.dart';
-import 'package:cultureconnect/pages/culture_details.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,7 +24,6 @@ class _HomePageState extends State<HomePage> {
     "assets/images/north/uttarpradesh.jpg",
   ];
 
-  // List of events
   final List<Map<String, String>> events = [
     {'date': 'March 14, 2025', 'name': 'Holi'},
     {'date': 'March 30, 2025', 'name': 'Ugadi'},
@@ -78,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       icon: Icon(Icons.message_rounded,
                           color: const Color.fromARGB(255, 247, 241, 241),
-                          size: 28), // Message icon
+                          size: 28),
                       onPressed: () {
                         print("Message icon clicked");
                       },
@@ -161,7 +158,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Build the event buttons
   Widget _buildEventButtons() {
     return Column(
       children: events.map((event) {
@@ -169,7 +165,6 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.symmetric(vertical: 8),
           child: ElevatedButton(
             onPressed: () {
-              // Placeholder for future calendar integration
               print('${event['name']} clicked');
             },
             style: ElevatedButton.styleFrom(
@@ -205,7 +200,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Section title widget
   Widget _sectionTitle(String title) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -227,7 +221,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Card container widget
   Widget _cardContainer(Widget child) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -242,7 +235,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Fun fact card widget
   Widget _funFactCard() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -262,7 +254,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Banner dialog
   void _showBannerDialog(BuildContext context) {
     showDialog(
       context: context,

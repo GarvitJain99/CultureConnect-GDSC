@@ -77,7 +77,7 @@ class _JoinedCommunityScreenState extends State<JoinedCommunityScreen> {
                       CircleAvatar(
                         backgroundImage: imageUrl.isNotEmpty
                             ? NetworkImage(imageUrl)
-                            : AssetImage('assets/default_community.png')
+                            : AssetImage('assets/images/default_community.png')
                                 as ImageProvider,
                         radius: screenWidth * 0.08,
                       ),

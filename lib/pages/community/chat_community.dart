@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'user_profile.dart';
 
 class CommunityChatScreen extends StatefulWidget {
   final String communityId;
@@ -21,7 +20,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _messageController = TextEditingController();
-  File? _selectedImage;
   String currentUserId = "";
   String? _replyingToMessageId;
   Map<String, dynamic>? _replyingToMessage;
@@ -113,6 +111,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       String userId = _auth.currentUser!.uid;
       DocumentSnapshot userDoc = await _firestore.collection('users').doc(userId).get();
       String userName = userDoc['name'];
+      String profilePic = userDoc['profileImage'];
 
       await _firestore
           .collection('communities')
@@ -122,6 +121,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
         'text': imageUrl ?? _messageController.text,
         'senderId': userId,
         'senderName': userName,
+        'senderProfilePic': profilePic,
         'timestamp': FieldValue.serverTimestamp(),
         'type': imageUrl != null ? 'image' : poll != null ? 'poll' : 'text',
         'replyTo': _replyingToMessageId,
@@ -162,9 +162,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     if (pickedFile == null) return;
 
     File imageFile = File(pickedFile.path);
-    setState(() {
-      _selectedImage = imageFile;
-    });
 
     String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
     UploadTask uploadTask = FirebaseStorage.instance
@@ -511,7 +508,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                   CircleAvatar(
                                     backgroundImage: message['senderProfilePic'] != null
                                         ? NetworkImage(message['senderProfilePic'])
-                                        : AssetImage('assets/default_profile.png')
+                                        : AssetImage('assets/images/default_profile.jpg')
                                             as ImageProvider,
                                     radius: 20,
                                   ),
