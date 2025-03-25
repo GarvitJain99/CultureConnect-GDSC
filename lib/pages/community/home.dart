@@ -81,7 +81,6 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    double textScaleFactor = MediaQuery.of(context).textScaleFactor;
 
     return Scaffold(
       appBar: AppBar(
@@ -150,7 +149,7 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
                         CircleAvatar(
                           backgroundImage: imageUrl.isNotEmpty
                               ? NetworkImage(imageUrl)
-                              : AssetImage('assets/default_community.png')
+                              : AssetImage('assets/images/default_community.png')
                                   as ImageProvider,
                           radius: screenWidth * 0.08,
                         ),

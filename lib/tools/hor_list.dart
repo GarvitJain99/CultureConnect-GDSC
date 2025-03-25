@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import 'package:cultureconnect/pages/home.dart';
 import 'package:cultureconnect/pages/encyclopedia/category_selection.dart';
 
-// Define festival pages (add these in your project)
 class DiwaliPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -60,7 +58,6 @@ class ChristmasPage extends StatelessWidget {
   }
 }
 
-// List of festival pages
 final List<Widget> festivalPages = [
   DiwaliPage(),
   EidPage(),
@@ -71,19 +68,17 @@ final List<Widget> festivalPages = [
 Widget horizontalScrollList(
     List<String> items, List<String> images, BuildContext context) {
   return SizedBox(
-    height: 120, // Set a fixed height for the horizontal ListView
+    height: 120, 
     child: ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: items.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            // Check if the item is a festival
             if (items[index] == "Diwali" ||
                 items[index] == "Eid" ||
                 items[index] == "Holi" ||
                 items[index] == "Christmas") {
-              // Navigate to the corresponding festival page
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -91,7 +86,6 @@ Widget horizontalScrollList(
                 ),
               );
             } else {
-              // Call the existing dialog box function for culture items
               showCultureDialog(context, items[index], images[index]);
             }
           },
@@ -142,7 +136,6 @@ final Map<String, String> culturefacts = {
 
 void showCultureDialog(
     BuildContext context, String stateName, String imagePath) {
-  // Fetch the fact for the given state
   String fact = culturefacts[stateName] ?? "Interesting fact about $stateName";
 
   showDialog(

@@ -203,7 +203,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           : (profileImage.isNotEmpty
                                                   ? NetworkImage(profileImage)
                                                   : const AssetImage(
-                                                      'assets/default_profile.png'))
+                                                      'assets/default_profile.jpg'))
                                               as ImageProvider,
                                     ),
                                     const CircleAvatar(

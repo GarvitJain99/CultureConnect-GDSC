@@ -48,7 +48,7 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
               },
               itemBuilder: (context, index) {
                 String category = categories[index];
-                String imagePath = categoryImages[category] ?? "assets/images/default.png";
+                String imagePath = categoryImages[category] ?? "assets/images/default.jpg";
 
                 return GestureDetector(
                   onTap: () {
