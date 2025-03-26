@@ -70,11 +70,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)], // Deep Red to Saffron
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+         gradient: LinearGradient(  
+  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
+  begin: Alignment.topCenter,  
+  end: Alignment.bottomCenter, 
+),
         ),
         child: SafeArea(
           child: Column(

@@ -35,8 +35,8 @@ class _NavBarState extends State<NavBar> {
         currentIndex: _selectedIndex,
         onTap: _onNavItemTapped,
         backgroundColor: const Color.fromARGB(255, 15, 15, 16),
-        selectedItemColor: Color(0xFFB71C1C),
-        unselectedItemColor: Color.fromARGB(255, 238, 178, 89),
+        selectedItemColor: Color(0xFFFC7C79),
+        unselectedItemColor: Color(0xFFEDC0F9),
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Community"),

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'checkout_page.dart'; // Import your CheckoutPage file
+import 'checkout_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -24,18 +24,18 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Your Cart"),
+        title: const Text("Your Cart", style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+           gradient: LinearGradient(
+        colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
         ),
         child: Column(
           children: [
@@ -49,14 +49,14 @@ class CartPage extends StatelessWidget {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator(color: Colors.white));
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(
                       child: Text(
                         "Your cart is empty",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                        style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     );
                   }
@@ -68,90 +68,93 @@ class CartPage extends StatelessWidget {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       var item = items[index];
-                      return Card(
-                        color: Colors.black87.withOpacity(0.15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.white.withOpacity(0.9),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.9),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
                         ),
-                        elevation: 0,
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(1),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              item['imageUrl'],
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          title: Text(
+                            item['name'],
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  item['imageUrl'],
-                                  width: 80,
-                                  height: 80,
-                                  fit: BoxFit.cover,
+                              const SizedBox(height: 5),
+                              Text(
+                                "₹${item['price']}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(width: 15),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item['name'],
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                              const SizedBox(height: 0 ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove, color: Colors.black),
+                                    onPressed: () {
+                                      if (item['quantity'] > 1) {
+                                        FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(userId)
+                                            .collection('cart')
+                                            .doc(item.id)
+                                            .update({'quantity': item['quantity'] - 1});
+                                      } else {
+                                        FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(userId)
+                                            .collection('cart')
+                                            .doc(item.id)
+                                            .delete();
+                                      }
+                                    },
+                                  ),
+                                  Text(
+                                    item['quantity'].toString(),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
                                     ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      "₹${item['price']}",
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
-                                          onPressed: () {
-                                            if (item['quantity'] > 1) {
-                                              FirebaseFirestore.instance
-                                                  .collection('users')
-                                                  .doc(userId)
-                                                  .collection('cart')
-                                                  .doc(item.id)
-                                                  .update({'quantity': item['quantity'] - 1});
-                                            } else {
-                                              FirebaseFirestore.instance
-                                                  .collection('users')
-                                                  .doc(userId)
-                                                  .collection('cart')
-                                                  .doc(item.id)
-                                                  .delete();
-                                            }
-                                          },
-                                        ),
-                                        Text(
-                                          item['quantity'].toString(),
-                                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
-                                          onPressed: () {
-                                            FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc(userId)
-                                                .collection('cart')
-                                                .doc(item.id)
-                                                .update({'quantity': item['quantity'] + 1});
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.add, color: Colors.black),
+                                    onPressed: () {
+                                      FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(userId)
+                                          .collection('cart')
+                                          .doc(item.id)
+                                          .update({'quantity': item['quantity'] + 1});
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -163,7 +166,7 @@ class CartPage extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('users')
@@ -171,23 +174,35 @@ class CartPage extends StatelessWidget {
                     .collection('cart')
                     .snapshots(),
                 builder: (context, snapshot) {
-                  return ElevatedButton(
-                    onPressed: snapshot.hasData && snapshot.data!.docs.isNotEmpty
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => CheckoutPage()),
-                            );
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: const Text(
-                      'Proceed to Checkout',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                  return AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    opacity: snapshot.hasData && snapshot.data!.docs.isNotEmpty ? 1.0 : 0.5,
+                    child: ElevatedButton(
+                      onPressed: snapshot.hasData && snapshot.data!.docs.isNotEmpty
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => CheckoutPage()),
+                              );
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shadowColor: Colors.black.withOpacity(0.2),
+                        elevation: 5,
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'Proceed to Checkout',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 },
@@ -196,6 +211,6 @@ class CartPage extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+   ); 
+ }
 }

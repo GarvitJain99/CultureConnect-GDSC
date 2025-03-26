@@ -25,100 +25,114 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 80),
-          const Text(
-            "Select a category",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-            ),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFC7C79), // AppBar Color
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+           gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], // Gradient Background
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          const SizedBox(height: 20), 
-          Expanded(
-            child: PageView.builder(
-              controller: _pageController,
-              itemCount: categories.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                String category = categories[index];
-                String imagePath = categoryImages[category] ?? "assets/images/default.jpg";
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 80),
+            const Text(
+              "Choose a category",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+                color: Colors.white, // Adjusted for better contrast
+              ),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: categories.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  String category = categories[index];
+                  String imagePath = categoryImages[category] ?? "assets/images/default.jpg";
 
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GeneratedContentPage(
-                          culture: widget.culture,
-                          category: category,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GeneratedContentPage(
+                            culture: widget.culture,
+                            category: category,
+                          ),
                         ),
+                      );
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut,
+                      margin: EdgeInsets.symmetric(vertical: _currentIndex == index ? 2 : 12, horizontal: 10),
+                      height: 100,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                            offset: const Offset(2, 6),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                    margin: EdgeInsets.symmetric(vertical: _currentIndex == index ? 2 : 12, horizontal: 10),
-                    height: 100, 
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: const Offset(2, 6),
-                        ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        // Background image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.asset(
-                            imagePath,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
-                        ),
-                        // Dark overlay
-                        Container(
-                          decoration: BoxDecoration(
+                      child: Stack(
+                        children: [
+                          // Background image
+                          ClipRRect(
                             borderRadius: BorderRadius.circular(14),
-                            color: Colors.black.withOpacity(0.4),
-                          ),
-                        ),
-                        // Category name in the center
-                        Center(
-                          child: Text(
-                            category,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.1,
+                            child: Image.asset(
+                              imagePath,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
                             ),
                           ),
-                        ),
-                      ],
+                          // Dark overlay
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              color: Colors.black.withOpacity(0.4),
+                            ),
+                          ),
+                          // Category name in the center
+                          Center(
+                            child: Text(
+                              category,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          const SizedBox(height: 120),
-        ],
-     ),
+            const SizedBox(height: 120),
+          ],
+        ),
+      ),
     );
   }
 }
