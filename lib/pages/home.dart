@@ -41,11 +41,11 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
+          gradient: LinearGradient(  
+  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
+  begin: Alignment.topCenter,  
+  end: Alignment.bottomCenter, 
+),
         ),
         child: SingleChildScrollView(
           child: Column(

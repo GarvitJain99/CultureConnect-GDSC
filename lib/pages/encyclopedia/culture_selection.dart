@@ -55,74 +55,87 @@ class CultureSelectionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Select a Culture in $region")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Two columns per row
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1, // Ensures square-shaped cards
+      appBar: AppBar(
+        title: Text("Select a Culture in $region"),
+        backgroundColor: const Color(0xFFFC7C79), // AppBar Color
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], // Background Gradient
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          itemCount: cultures[region]!.length,
-          itemBuilder: (context, index) {
-            String culture = cultures[region]![index];
-            String imagePath = stateImages[culture] ?? "assets/default.jpg";  
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // Two columns per row
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1, // Ensures square-shaped cards
+            ),
+            itemCount: cultures[region]!.length,
+            itemBuilder: (context, index) {
+              String culture = cultures[region]![index];
+              String imagePath = stateImages[culture] ?? "assets/default.jpg";  
 
-            return GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CategorySelectionPage(culture: culture),
-                  ),
-                );
-              },
-              child: Stack(
-                children: [
-                  // Background image
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      image: DecorationImage(
-                        image: AssetImage(imagePath),
-                        fit: BoxFit.cover,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 8,
-                          spreadRadius: 2,
-                          offset: const Offset(2, 4),
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CategorySelectionPage(culture: culture),
+                    ),
+                  );
+                },
+                child: Stack(
+                  children: [
+                    // Background image
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        image: DecorationImage(
+                          image: AssetImage(imagePath),
+                          fit: BoxFit.cover,
                         ),
-                      ],
-                    ),
-                  ),
-                  // Dark overlay for better text visibility
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.black.withOpacity(0.4),
-                    ),
-                  ),
-                  // State name in center
-                  Center(
-                    child: Text(
-                      culture,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                            offset: const Offset(2, 4),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                    // Dark overlay for better text visibility
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.black.withOpacity(0.4),
+                      ),
+                    ),
+                    // State name in center
+                    Center(
+                      child: Text(
+                        culture,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
