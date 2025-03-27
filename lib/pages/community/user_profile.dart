@@ -56,9 +56,9 @@ class UserProfileScreen extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundImage: userData['profileImage'] != null
+                            backgroundImage: userData['profileImage'] != ""
                                 ? NetworkImage(userData['profileImage'])
-                                : AssetImage('assets/default_profile.png')
+                                : AssetImage('assets/images/default_profile.jpg')
                                     as ImageProvider,
                           ),
                           SizedBox(height: 10),

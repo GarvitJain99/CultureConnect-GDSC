@@ -16,15 +16,15 @@ class _CreateCommunityState extends State<CreateCommunity> {
   final TextEditingController _passwordController = TextEditingController();
   File? _imageFile;
   bool _isLoading = false;
-  String _communityType = "public"; // Default to Public
+  String _communityType = "public"; 
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  // 🔹 Pick an image from gallery
   Future<void> pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
@@ -32,12 +32,12 @@ class _CreateCommunityState extends State<CreateCommunity> {
     }
   }
 
-  // 🔹 Upload image to Firebase Storage
   Future<String?> uploadImage() async {
     if (_imageFile == null) return null;
 
     try {
-      String fileName = "community_${DateTime.now().millisecondsSinceEpoch}.jpg";
+      String fileName =
+          "community_${DateTime.now().millisecondsSinceEpoch}.jpg";
       Reference storageRef = _storage.ref().child("community_images/$fileName");
       UploadTask uploadTask = storageRef.putFile(_imageFile!);
       TaskSnapshot snapshot = await uploadTask;
@@ -48,14 +48,15 @@ class _CreateCommunityState extends State<CreateCommunity> {
     }
   }
 
-  // 🔹 Create new community
   Future<void> createCommunity() async {
     if (_nameController.text.isEmpty || _descriptionController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill all fields")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Please fill all fields")));
       return;
     }
     if (_communityType == "private" && _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Enter a password for private community")));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Enter a password for private community")));
       return;
     }
 
@@ -75,13 +76,16 @@ class _CreateCommunityState extends State<CreateCommunity> {
         'members': [userId],
         'createdAt': FieldValue.serverTimestamp(),
         'type': _communityType,
-        'password': _communityType == "private" ? _passwordController.text.trim() : null,
+        'password': _communityType == "private"
+            ? _passwordController.text.trim()
+            : null,
       });
 
       Navigator.pop(context);
     } catch (e) {
       print("Error creating community: $e");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error creating community")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error creating community")));
     }
 
     setState(() {
@@ -91,158 +95,246 @@ class _CreateCommunityState extends State<CreateCommunity> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create Community"),
-        backgroundColor: Colors.deepPurple,
+        title: Text(
+          "Create Community",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.07,
+          ),
+        ),
+        backgroundColor: Color(0xFFFC7C79), 
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            // 🔹 Community Image
-            GestureDetector(
-              onTap: pickImage,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey[200],
-                  border: Border.all(color: Colors.deepPurple, width: 2),
-                ),
-                child: _imageFile != null
-                    ? ClipOval(
-                        child: Image.file(_imageFile!, fit: BoxFit.cover),
-                      )
-                    : Icon(Icons.camera_alt, size: 40, color: Colors.deepPurple),
-              ),
+      body: Stack(children: [
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFFFC7C79),
+                Color(0xFFEDC0F9)
+              ], 
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            SizedBox(height: 20),
-
-            // 🔹 Community Name
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: "Community Name",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+          ),
+          height: double.infinity,           width: double.infinity, 
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(screenWidth * 0.04),
+            child: Column(
+              children: [
+                GestureDetector(
+                  onTap: pickImage,
+                  child: Container(
+                    width: screenWidth * 0.3,
+                    height: screenWidth * 0.3,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withOpacity(0.85),
+                      border: Border.all(
+                          color: Color(0xFFFC7C79),
+                          width: 2), 
+                    ),
+                    child: _imageFile != null
+                        ? ClipOval(
+                            child: Image.file(_imageFile!, fit: BoxFit.cover),
+                          )
+                        : Icon(Icons.camera_alt,
+                            size: screenWidth * 0.12,
+                            color: Color(0xFFFC7C79)), 
+                  ),
                 ),
-                prefixIcon: Icon(Icons.group, color: Colors.deepPurple),
-              ),
-            ),
-            SizedBox(height: 15),
+                SizedBox(height: screenHeight * 0.02),
 
-            // 🔹 Community Description
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: "Description",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: "Community Name",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Colors.white.withOpacity(0.7)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Color(0xFFFC7C79)),
+                    ),
+                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                    prefixIcon: Icon(Icons.group,
+                        color: Color(0xFFFC7C79)), 
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.3),
+                  ),
+                  style: TextStyle(color: Colors.white),
                 ),
-                prefixIcon: Icon(Icons.description, color: Colors.deepPurple),
-              ),
-              maxLines: 3,
-            ),
-            SizedBox(height: 20),
+                SizedBox(height: screenHeight * 0.015),
 
-            // 🔹 Public/Private Toggle
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Public Option
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _communityType = "public";
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: _communityType == "public" ? Colors.deepPurple : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        "Public",
-                        style: TextStyle(
-                          color: _communityType == "public" ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.bold,
+                TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    labelText: "Description",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          BorderSide(color: Colors.white.withOpacity(0.7)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Color(0xFFFC7C79)),
+                    ),
+                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                    prefixIcon: Icon(Icons.description,
+                        color: Color(0xFFFC7C79)), 
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.3),
+                  ),
+                  maxLines: 3,
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: screenHeight * 0.025),
+
+                Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.02,
+                      vertical: screenHeight * 0.005),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _communityType = "public";
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.05,
+                              vertical: screenHeight * 0.01),
+                          decoration: BoxDecoration(
+                            color: _communityType == "public"
+                                ? Color(0xFFFC7C79)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            "Public",
+                            style: TextStyle(
+                              color: _communityType == "public"
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.8),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-
-                  // Private Option
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _communityType = "private";
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: _communityType == "private" ? Colors.deepPurple : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        "Private",
-                        style: TextStyle(
-                          color: _communityType == "private" ? Colors.white : Colors.black,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(width: screenWidth * 0.01),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _communityType = "private";
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.05,
+                              vertical: screenHeight * 0.01),
+                          decoration: BoxDecoration(
+                            color: _communityType == "private"
+                                ? Color(0xFFFC7C79)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            "Private",
+                            style: TextStyle(
+                              color: _communityType == "private"
+                                  ? Colors.white
+                                  : Colors.white.withOpacity(0.8),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-
-            // 🔹 Password Field (only for private)
-            if (_communityType == "private")
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  prefixIcon: Icon(Icons.lock, color: Colors.deepPurple),
                 ),
-                obscureText: true,
-              ),
-            SizedBox(height: 20),
+                SizedBox(height: screenHeight * 0.025),
 
-            // 🔹 Create Button
-            _isLoading
-                ? CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: createCommunity,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                if (_communityType == "private")
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.white),
                       ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                            BorderSide(color: Colors.white.withOpacity(0.7)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Color(0xFFFC7C79)),
+                      ),
+                      labelStyle:
+                          TextStyle(color: Colors.white.withOpacity(0.8)),
+                      prefixIcon: Icon(Icons.lock,
+                          color:
+                              Color(0xFFFC7C79)),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.3),
                     ),
-                    child: Text(
-                      "Create Community",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
+                    obscureText: true,
+                    style: TextStyle(color: Colors.white),
                   ),
-          ],
+                if (_communityType == "private")
+                  SizedBox(height: screenHeight * 0.025),
+
+                _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : ElevatedButton(
+                        onPressed: createCommunity,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Color(0xFFFC7C79), 
+                          padding: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.15,
+                              vertical: screenHeight * 0.02),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        child: Text(
+                          "Create Community",
+                          style: TextStyle(
+                              fontSize: screenWidth * 0.045,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+              ],
+            ),
+          ),
         ),
-      ),
+      ]),
     );
   }
 }
