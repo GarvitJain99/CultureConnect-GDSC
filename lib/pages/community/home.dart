@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cultureconnect/pages/community/chat_community.dart';
+import 'package:cultureconnect/pages/community/create_community.dart';
+import 'package:cultureconnect/pages/community/joined_community.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'chat_community.dart';
-import 'create_community.dart';
-import 'joined_community.dart';
 
 class CommunityHomeScreen extends StatefulWidget {
   @override
@@ -88,12 +88,14 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
           "Communities",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: screenWidth * 0.05,
+            fontSize: screenWidth * 0.07,
           ),
         ),
+        backgroundColor: Color(0xFFFC7C79),
         actions: [
           IconButton(
-            icon: Icon(Icons.add, size: screenWidth * 0.07, color: Colors.black),
+            icon:
+                Icon(Icons.add, size: screenWidth * 0.07, color: Colors.black),
             onPressed: () {
               Navigator.push(
                 context,
@@ -103,133 +105,154 @@ class _CommunityHomeScreenState extends State<CommunityHomeScreen> {
           ),
         ],
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('communities').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: _firestore.collection('communities').snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
 
-          var communities = snapshot.data!.docs;
+            var communities = snapshot.data!.docs;
 
-          return ListView.builder(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.04,
-              vertical: screenHeight * 0.02,
-            ),
-            itemCount: communities.length,
-            itemBuilder: (context, index) {
-              var community = communities[index];
-              var data = community.data() as Map<String, dynamic>;
-              bool isMember = (data['members'] as List).contains(currentUserId);
-              String imageUrl = data['imageUrl'] ?? "";
-              bool isPrivate = data['type'] == "private";
+            return ListView.builder(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.04,
+                vertical: screenHeight * 0.02,
+              ),
+              itemCount: communities.length,
+              itemBuilder: (context, index) {
+                var community = communities[index];
+                var data = community.data() as Map<String, dynamic>;
+                bool isMember =
+                    (data['members'] as List).contains(currentUserId);
+                String imageUrl = data['imageUrl'] ?? "";
+                bool isPrivate = data['type'] == "private";
 
-              return Card(
-                margin: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: InkWell(
-                  onTap: () {
-                    if (isMember) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              CommunityChatScreen(communityId: community.id),
-                        ),
-                      );
-                    }
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.all(screenWidth * 0.04),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: imageUrl.isNotEmpty
-                              ? NetworkImage(imageUrl)
-                              : AssetImage('assets/images/default_community.png')
-                                  as ImageProvider,
-                          radius: screenWidth * 0.08,
-                        ),
-                        SizedBox(width: screenWidth * 0.04),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      data['name'],
-                                      style: TextStyle(
-                                        fontSize: screenWidth * 0.045,
-                                        fontWeight: FontWeight.bold,
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
+                  elevation: 4,
+                  color: Colors.white.withOpacity(0.85),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      if (isMember) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                CommunityChatScreen(communityId: community.id),
+                          ),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.all(screenWidth * 0.04),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: imageUrl.isNotEmpty
+                                ? NetworkImage(imageUrl)
+                                : AssetImage(
+                                        'assets/images/default_community.png')
+                                    as ImageProvider,
+                            radius: screenWidth * 0.08,
+                          ),
+                          SizedBox(width: screenWidth * 0.04),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        data['name'],
+                                        style: TextStyle(
+                                          fontSize: screenWidth * 0.045,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                    if (isPrivate)
+                                      if (!isMember)
+                                        Icon(Icons.lock,
+                                            color: Colors.red,
+                                            size: screenWidth * 0.04)
+                                      else
+                                        Icon(Icons.lock_open,
+                                            color: Colors.green,
+                                            size: screenWidth * 0.04)
+                                  ],
+                                ),
+                                SizedBox(height: screenHeight * 0.005),
+                                Text(
+                                  data['description'],
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.035,
+                                    color: Colors.grey[600],
                                   ),
-                                  if (isPrivate)
-                                    Icon(Icons.lock,
-                                        color: Colors.red,
-                                        size: screenWidth * 0.04),
-                                ],
-                              ),
-                              SizedBox(height: screenHeight * 0.005),
-                              Text(
-                                data['description'],
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.035,
-                                  color: Colors.grey[600],
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: screenWidth * 0.02),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (isMember) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CommunityChatScreen(
+                                        communityId: community.id),
+                                  ),
+                                );
+                              } else {
+                                await joinCommunity(community.id, data['type']);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isMember
+                                  ? Color(0xFFFF8A87)
+                                  : const Color.fromARGB(255, 155, 215, 86),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: screenWidth * 0.02),
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (isMember) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CommunityChatScreen(
-                                      communityId: community.id),
-                                ),
-                              );
-                            } else {
-                              await joinCommunity(community.id, data['type']);
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isMember ? Colors.blue : Colors.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.05,
+                                vertical: screenHeight * 0.015,
+                              ),
                             ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.05,
-                              vertical: screenHeight * 0.015,
+                            child: Text(
+                              isMember ? "Open" : "Join",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth * 0.04,
+                              ),
                             ),
                           ),
-                          child: Text(
-                            isMember ? "Open" : "Join",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: screenWidth * 0.04,
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
