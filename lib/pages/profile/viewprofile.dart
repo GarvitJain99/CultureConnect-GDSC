@@ -39,8 +39,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
           await _firestore.collection('users').doc(user.uid).get();
 
       if (userDoc.exists) {
-        Map<String, dynamic> userData =
-            userDoc.data() as Map<String, dynamic>;
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
         setState(() {
           name = userData['name'] ?? '';
@@ -70,18 +69,19 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-         gradient: LinearGradient(  
-  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
-  begin: Alignment.topCenter,  
-  end: Alignment.bottomCenter, 
-),
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         child: SafeArea(
           child: Column(
             children: [
               // *Top Bar with Logout*
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -107,7 +107,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
               Expanded(
                 child: isLoading
-                    ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                    ? const Center(
+                        child: CircularProgressIndicator(color: Colors.white))
                     : SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -131,7 +132,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                   radius: 60,
                                   backgroundImage: profileImage.isNotEmpty
                                       ? NetworkImage(profileImage)
-                                      : const AssetImage('assets/default_profile.jpg')
+                                      : const AssetImage(
+                                              'assets/images/default_profile.jpg')
                                           as ImageProvider,
                                 ),
                               ),
@@ -148,7 +150,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                 onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const EditProfileScreen(),
+                                    builder: (context) =>
+                                        const EditProfileScreen(),
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
@@ -235,6 +238,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
           Divider(color: Colors.white.withOpacity(0.5), thickness: 1),
         ],
       ),
-     );
-   }
+    );
+  }
 }

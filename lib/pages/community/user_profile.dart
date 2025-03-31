@@ -10,7 +10,7 @@ class UserProfileScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("User Profile", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Color(0xFFFC7C79),
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: FutureBuilder<DocumentSnapshot>(
@@ -34,11 +34,11 @@ class UserProfileScreen extends StatelessWidget {
 
           return Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.deepPurple.shade100, Colors.white],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+              gradient: LinearGradient(  
+  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
+  begin: Alignment.topCenter,  
+  end: Alignment.bottomCenter, 
+),
             ),
             child: Padding(
               padding: EdgeInsets.all(16),
@@ -67,7 +67,7 @@ class UserProfileScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.deepPurple),
+                                color: Color(0xFFFC7C79)),
                           ),
                           SizedBox(height: 5),
                           Text(
@@ -92,14 +92,14 @@ class UserProfileScreen extends StatelessWidget {
                         children: [
                           ListTile(
                             leading: Icon(Icons.location_on,
-                                color: Colors.deepPurple),
+                                color: Color(0xFFFC7C79)),
                             title: Text("Location"),
                             subtitle: Text(userData['location'] ?? "Unknown",
                                 style: TextStyle(fontSize: 16)),
                           ),
                           Divider(),
                           ListTile(
-                            leading: Icon(Icons.info, color: Colors.deepPurple),
+                            leading: Icon(Icons.info, color: Color(0xFFFC7C79)),
                             title: Text("Status"),
                             subtitle: Text(userData['status'] ?? "No Status",
                                 style: TextStyle(fontSize: 16)),

@@ -26,51 +26,68 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('marketplace')
-            .doc(widget.itemId)
-            .get(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      appBar: AppBar(
+        title: const Text("Item Description"),
+        backgroundColor: Color(0xFFFC7C79),
+      ),
+      extendBodyBehindAppBar: false,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: FutureBuilder<DocumentSnapshot>(
+          future: FirebaseFirestore.instance
+              .collection('marketplace')
+              .doc(widget.itemId)
+              .get(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          var item = snapshot.data!;
-          Map<String, dynamic> data = item.data() as Map<String, dynamic>;
-          List<String> imageUrls = _getImageUrls(data);
-          double price = double.tryParse(data['price'].toString()) ?? 0.0;
+            var item = snapshot.data!;
+            Map<String, dynamic> data = item.data() as Map<String, dynamic>;
+            List<String> imageUrls = _getImageUrls(data);
+            double price = double.tryParse(data['price'].toString()) ?? 0.0;
 
-          return CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight:
-                    MediaQuery.of(context).size.height * _imageHeightFactor,
-                floating: false,
-                pinned: true,
-                flexibleSpace: _buildImageGallery(imageUrls),
-                backgroundColor: Colors.transparent,
-                iconTheme: const IconThemeData(color: Colors.white),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildProductHeader(data, price),
-                      const SizedBox(height: 20),
-                      _buildProductDescription(data),
-                      const SizedBox(height: 30),
-                    ],
+            return CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  expandedHeight:
+                      MediaQuery.of(context).size.height * _imageHeightFactor,
+                  floating: false,
+                  pinned:
+                      false, // Set to false to completely remove app bar behavior
+                  flexibleSpace: _buildImageGallery(imageUrls),
+                  backgroundColor: Colors.transparent,
+                  elevation: 0, // Remove shadow
+                  automaticallyImplyLeading: false, // Remove back button
+                  toolbarHeight: 0, // Make sure no toolbar space is taken
+                  collapsedHeight: 0, // Collapsed height to zero
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildProductHeader(data, price),
+                        const SizedBox(height: 20),
+                        _buildProductDescription(data),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
       bottomNavigationBar: _buildBottomBar(userId),
     );
@@ -92,7 +109,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
           itemCount: imageUrls.length,
           onPageChanged: (index) => setState(() => _currentImageIndex = index),
           itemBuilder: (context, index) => Container(
-            color: Colors.grey[100],
+            color: Colors.transparent,
             child: Center(
               child: GestureDetector(
                 onTap: () => _showImageDialog(context, imageUrls[index]),
@@ -138,7 +155,9 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   duration: const Duration(milliseconds: 300),
                   width: _currentImageIndex == index ? 24 : 8,
                   height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _currentImageIndex == index
                         ? Colors.white
@@ -162,7 +181,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 3),
@@ -171,10 +190,10 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.deepOrange,
+            color: Colors.black,
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 1),
         const Divider(height: 1, thickness: 1),
       ],
     );
@@ -185,20 +204,20 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Description',
+          'Description :',
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.white70,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 0),
         Text(
           data['description'] ?? 'No description available',
           style: const TextStyle(
             fontSize: 16,
             color: Colors.black54,
-            height: 1.5,
+            height: 1,
           ),
         ),
       ],
@@ -210,15 +229,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
       height: 80,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        color: Color(0xFFEDC0F9),
       ),
       child: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
@@ -244,7 +255,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                   child: ElevatedButton(
                     onPressed: () => _handleAddToCart(userId),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
+                      backgroundColor: Color(0xFFFC7C79),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
@@ -263,7 +274,7 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                 child: ElevatedButton(
                   onPressed: () => _handleBuyNow(userId, quantity),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: const Color.fromARGB(255, 155, 215, 86),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
