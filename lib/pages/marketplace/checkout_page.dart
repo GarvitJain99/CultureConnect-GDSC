@@ -269,18 +269,42 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Checkout')),
-      body: Padding(
+      appBar: AppBar(
+        title: Text('Checkout', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color(0xFFFC7C79),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      extendBodyBehindAppBar: false,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(  
+  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
+  begin: Alignment.topCenter,  
+  end: Alignment.bottomCenter, 
+),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
+              const SizedBox(height: 2),
               TextFormField(
                 controller: _phoneController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38 ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                 ),
                 keyboardType: TextInputType.phone,
                 onSaved: (val) => phone = val!,
@@ -295,14 +319,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               TextFormField(
                 controller: _locationController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Selected Location',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.location_on),
+                    icon: Icon(Icons.location_on, color: Colors.white70),
                     onPressed: () async {
                       final selectedLocation = await Navigator.push(
                         context,
@@ -314,7 +348,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         ),
                       );
 
-                      if (selectedLocation != null && selectedLocation is Map) {
+                      if (selectedLocation != null &&
+                          selectedLocation is Map) {
                         setState(() {
                           _locationController.text =
                               selectedLocation['address'] ?? '';
@@ -322,16 +357,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           _longitude = selectedLocation['longitude'];
                           selectedState = selectedLocation['state'];
                           selectedCity = selectedLocation['city'];
-                          street =
-                              selectedLocation['street'] ?? '';
-                          pincode =
-                              selectedLocation['pincode'] ?? '';
+                          street = selectedLocation['street'] ?? '';
+                          pincode = selectedLocation['pincode'] ?? '';
 
                           _streetController.text = street;
                           _stateController.text = selectedState ?? '';
                           _cityController.text = selectedCity ?? '';
-                          _pincodeController.text =
-                              pincode;
+                          _pincodeController.text = pincode;
                         });
                       }
                     },
@@ -346,12 +378,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               TextFormField(
                 controller: _streetController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Street',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                 ),
                 onSaved: (val) => street = val!,
                 onChanged: (value) => setState(() {}),
@@ -362,12 +404,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               TextFormField(
                 controller: _stateController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'State',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                 ),
                 onSaved: (val) => selectedState = val,
                 onChanged: (value) => setState(() {
@@ -380,12 +432,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               TextFormField(
                 controller: _cityController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'City',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                 ),
                 onSaved: (val) => selectedCity = val,
                 onChanged: (value) => setState(() {
@@ -398,12 +460,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               TextFormField(
                 controller: _pincodeController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Pincode',
-                  border: OutlineInputBorder(),
+                  labelStyle: TextStyle(color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
                 onSaved: (val) => pincode = val!,
@@ -412,25 +484,35 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     return 'Please enter your pincode';
                   }
                   if (value.length != 6) {
-                    return 'Please enter a valid 6-digit phone number';
+                    return 'Please enter a valid 6-digit pincode';
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15),
               TextFormField(
                 controller: _additionalNotesController,
+                style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Additional Notes (Optional)',
+                  labelStyle: TextStyle(color: Colors.white70),
                   hintText: 'Any special delivery instructions...',
-                  border: OutlineInputBorder(),
+                  hintStyle: TextStyle(color: Colors.white54),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white38),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                 ),
                 keyboardType: TextInputType.multiline,
                 maxLines: null,
                 minLines: 3,
-                // No onSaved or onChanged as we are not saving this
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 30),
               StatefulBuilder(
                 builder: (context, setState) {
                   return Row(
@@ -438,10 +520,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     children: [
                       Text('Total: ₹${totalAmount.toStringAsFixed(2)}',
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white)),
                       ElevatedButton(
                         onPressed: _startPayment,
-                        child: Text('Proceed to Pay'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Color(0xFFFC7C79),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 25, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 5,
+                        ),
+                        child: Text('Proceed to Pay',
+                            style: TextStyle(fontSize: 16)),
                       ),
                     ],
                   );

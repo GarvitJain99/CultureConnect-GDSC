@@ -72,17 +72,17 @@ class CartPage extends StatelessWidget {
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withOpacity(0.1),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.9),
-                              blurRadius: 8,
-                              spreadRadius: 2,
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 5,
+                              spreadRadius: 4,
                             ),
                           ],
                         ),
                         child: ListTile(
-                          contentPadding: const EdgeInsets.all(1),
+                          contentPadding: const EdgeInsets.all(02),
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: Image.network(

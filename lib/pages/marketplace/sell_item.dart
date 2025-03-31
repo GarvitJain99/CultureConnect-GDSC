@@ -295,6 +295,6 @@ class _SellItemPageState extends State<SellItemPage> {
           ],
         ),
       ),
-    );
+     );
   }
 }

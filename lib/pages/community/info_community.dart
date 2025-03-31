@@ -282,16 +282,16 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Community Info", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Color(0xFFFC7C79),
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.deepPurple.shade100, Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+         gradient: LinearGradient(
+        colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -327,7 +327,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                             child: Container(
                               padding: EdgeInsets.all(5),
                               decoration: BoxDecoration(
-                                color: Colors.deepPurple,
+                                color: Color(0xFFFC7C79),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(Icons.edit, color: Colors.white, size: 20),
@@ -344,7 +344,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple),
+                        color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -359,7 +359,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                         style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple),
+                            color: Colors.black),
                       ),
                       if (isAdmin)
                         Row(
@@ -368,14 +368,14 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                               IconButton(
                                 icon: Icon(
                                   Icons.close,
-                                  color: Colors.deepPurple,
+                                  color: Color(0xFFFC7C79),
                                 ),
                                 onPressed: _cancelEditDescription,
                               ),
                             IconButton(
                               icon: Icon(
                                 _isEditingDescription ? Icons.check : Icons.edit,
-                                color: Colors.deepPurple,
+                                color: Color(0xFFFC7C79),
                               ),
                               onPressed: () {
                                 if (_isEditingDescription) {
@@ -403,20 +403,20 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                   )
                 else if (communityDescription.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(0),
                     child: Text(
                       communityDescription,
-                      style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                      style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 229, 224, 224)),
                       textAlign: TextAlign.start,
                     ),
                   ),
-                SizedBox(height: 10),
+                SizedBox(height: 15),
                 Text(
                   "Community Media",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: Colors.black,
                   ),
                 ),
                 SizedBox(height: 10),
@@ -473,7 +473,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple),
+                          color: Colors.black),
                     ),
                     const SizedBox(width: 5),
                     Text(
@@ -481,7 +481,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple),
+                          color: Colors.black),
                     ),
                   ],
                 ),
@@ -562,12 +562,12 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                                       (isCurrentUser ? " (You)" : "")),
                                   subtitle: memberId == adminId
                                       ? Text("Admin",
-                                          style: TextStyle(color: Colors.red))
+                                          style: TextStyle(color: Color(0xFFFC7C79)))
                                       : null,
                                   trailing: isAdmin && memberId != adminId
                                       ? IconButton(
                                           icon: Icon(Icons.remove_circle,
-                                              color: Colors.red),
+                                              color: Color(0xFFFC7C79)),
                                           onPressed: () {
                                             showDialog(
                                               context: context,
@@ -587,7 +587,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                                                     },
                                                     child: Text("Remove",
                                                         style: TextStyle(
-                                                            color: Colors.red)),
+                                                            color: Color(0xFFFC7C79))),
                                                   ),
                                                 ],
                                               ),
@@ -616,7 +616,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                     child: ElevatedButton(
                       onPressed: _uploadImage,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Color(0xFFFC7C79),
                         padding:
                             EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(
@@ -651,14 +651,14 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                                   );
                                 },
                                 child: Text("Leave",
-                                    style: TextStyle(color: Colors.red)),
+                                    style: TextStyle(color: Color(0xFFFC7C79))),
                               ),
                             ],
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Color(0xFFFC7C79),
                         padding:
                             EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(
@@ -694,14 +694,14 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                                   );
                                 },
                                 child: Text("Delete Community",
-                                    style: TextStyle(color: Colors.red)),
+                                    style: TextStyle(color: Color(0xFFFC7C79))),
                               ),
                             ],
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Color(0xFFFC7C79),
                         padding:
                             EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(

@@ -148,18 +148,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(  
-  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
-  begin: Alignment.topCenter,  
-  end: Alignment.bottomCenter, 
-),
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         child: SafeArea(
           child: Column(
             children: [
               // *Top Bar*
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Row(
                   children: [
                     IconButton(
@@ -184,7 +185,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
               Expanded(
                 child: isLoading
-                    ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                    ? const Center(
+                        child: CircularProgressIndicator(color: Colors.white))
                     : SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -203,13 +205,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                           : (profileImage.isNotEmpty
                                                   ? NetworkImage(profileImage)
                                                   : const AssetImage(
-                                                      'assets/default_profile.jpg'))
+                                                      'assets/images/default_profile.jpg'))
                                               as ImageProvider,
                                     ),
                                     const CircleAvatar(
                                       radius: 18,
                                       backgroundColor: Colors.white,
-                                      child: Icon(Icons.camera_alt, color: Colors.deepOrange),
+                                      child: Icon(Icons.camera_alt,
+                                          color: Colors.deepOrange),
                                     ),
                                   ],
                                 ),
@@ -228,7 +231,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   foregroundColor: Colors.deepOrange,
-                                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 14, horizontal: 40),
                                   textStyle: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
