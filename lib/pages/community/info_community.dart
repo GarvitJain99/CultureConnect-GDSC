@@ -11,7 +11,7 @@ class CommunityInfoScreen extends StatefulWidget {
   final String communityId;
   final String currentUserId;
 
-  CommunityInfoScreen({required this.communityId, required this.currentUserId});
+  const CommunityInfoScreen({super.key, required this.communityId, required this.currentUserId});
 
   @override
   _CommunityInfoScreenState createState() => _CommunityInfoScreenState();
@@ -27,9 +27,9 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
   bool isAdmin = false;
   String communityImageUrl = "";
 
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   List<String> _filteredMembers = [];
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   bool _isEditingDescription = false;
   File? _newImageFile;
 
@@ -57,8 +57,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
               (communityMembersMap[memberId] ?? 'Unknown User')
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase()))
-          .toList();
-      print("Filtered Members: $_filteredMembers"); // Added log
+          .toList(); 
     });
   }
 
@@ -83,14 +82,12 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
           isAdmin = widget.currentUserId == adminId;
           communityImageUrl = data['imageUrl'] ?? '';
           _descriptionController.text = communityDescription;
-          print("Fetched members: $members"); // Added log
         });
 
         for (String memberId in members) {
           await getUserName(memberId);
         }
-        print("Community Members Map: $communityMembersMap"); // Added log
-        _onSearchChanged(); // Call this after fetching and populating map
+        _onSearchChanged(); 
       } else {
         print("❌ Community document does not exist.");
       }
@@ -107,8 +104,6 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
       var userDoc = await _firestore.collection('users').doc(userId).get();
       if (userDoc.exists && userDoc.data() != null) {
         communityMembersMap[userId] = userDoc.data()!['name'] ?? 'Unknown User';
-        print(
-            "Fetched user name for $userId: ${communityMembersMap[userId]}"); // Added log
         if (_searchController.text.isNotEmpty) {
           _onSearchChanged();
         }
@@ -140,8 +135,6 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
 
   Future<void> deleteCommunity() async {
     await _firestore.collection('communities').doc(widget.communityId).delete();
-    print("✅ Community deleted: $communityName");
-    // Navigation will now happen from the AlertDialog
   }
 
   Future<void> leaveCommunity() async {
@@ -448,7 +441,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                                 _openMedia(context, imageUrl);
                               },
                               child: Container(
-                                width: 100, // Adjust width as needed
+                                width: 100, 
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   image: DecorationImage(
@@ -643,7 +636,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                               TextButton(
                                 onPressed: () {
                                   leaveCommunity();
-                                  Navigator.pop(context); // Close the dialog
+                                  Navigator.pop(context); 
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(builder: (context) => CommunityHomeScreen()),
@@ -686,7 +679,7 @@ class _CommunityInfoScreenState extends State<CommunityInfoScreen> {
                               TextButton(
                                 onPressed: () {
                                   deleteCommunity();
-                                  Navigator.pop(context); // Close the dialog
+                                  Navigator.pop(context); 
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(builder: (context) => CommunityHomeScreen()),

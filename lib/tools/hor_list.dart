@@ -2,92 +2,28 @@ import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:cultureconnect/pages/encyclopedia/category_selection.dart';
 
-class DiwaliPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Diwali'),
-      ),
-      body: Center(
-        child: Text('Details about Diwali festival.'),
-      ),
-    );
-  }
-}
-
-class EidPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Eid'),
-      ),
-      body: Center(
-        child: Text('Details about Eid festival.'),
-      ),
-    );
-  }
-}
-
-class HoliPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Holi'),
-      ),
-      body: Center(
-        child: Text('Details about Holi festival.'),
-      ),
-    );
-  }
-}
-
-class ChristmasPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Christmas'),
-      ),
-      body: Center(
-        child: Text('Details about Christmas festival.'),
-      ),
-    );
-  }
-}
-
-final List<Widget> festivalPages = [
-  DiwaliPage(),
-  EidPage(),
-  HoliPage(),
-  ChristmasPage()
-];
+final Map<String, String> culturefacts = {
+  "Gujarat":
+      "Gujarat is famous for its vibrant Navratri celebrations and delicious Dhokla.",
+  "Rajasthan":
+      "Rajasthan is known for its majestic forts and the colorful Pushkar Camel Fair.",
+  "Kerala":
+      "Kerala is renowned for its serene backwaters and traditional Kathakali dance.",
+  "Uttar Pradesh":
+      "Uttar Pradesh is home to the iconic Taj Mahal and the holy city of Varanasi.",
+};
 
 Widget horizontalScrollList(
     List<String> items, List<String> images, BuildContext context) {
   return SizedBox(
-    height: 120, 
+    height: 120,
     child: ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: items.length,
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            if (items[index] == "Diwali" ||
-                items[index] == "Eid" ||
-                items[index] == "Holi" ||
-                items[index] == "Christmas") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => festivalPages[index],
-                ),
-              );
-            } else {
-              showCultureDialog(context, items[index], images[index]);
-            }
+            showCultureDialog(context, items[index], images[index]);
           },
           child: Container(
             margin: EdgeInsets.symmetric(horizontal: 8),
@@ -122,17 +58,6 @@ Widget horizontalScrollList(
     ),
   );
 }
-
-final Map<String, String> culturefacts = {
-  "Gujarat":
-      "Gujarat is famous for its vibrant Navratri celebrations and delicious Dhokla.",
-  "Rajasthan":
-      "Rajasthan is known for its majestic forts and the colorful Pushkar Camel Fair.",
-  "Kerala":
-      "Kerala is renowned for its serene backwaters and traditional Kathakali dance.",
-  "Uttar Pradesh":
-      "Uttar Pradesh is home to the iconic Taj Mahal and the holy city of Varanasi.",
-};
 
 void showCultureDialog(
     BuildContext context, String stateName, String imagePath) {

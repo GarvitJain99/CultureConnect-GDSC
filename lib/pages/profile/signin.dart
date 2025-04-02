@@ -4,6 +4,7 @@ import 'package:cultureconnect/pages/profile/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -14,6 +15,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen>
     with SingleTickerProviderStateMixin {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -101,12 +103,81 @@ class _SignInScreenState extends State<SignInScreen>
       } else {
         errorMessage = "Error: ${e.message}";
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage),
-          duration: const Duration(seconds: 3),
-        )
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(errorMessage),
+        duration: const Duration(seconds: 3),
+      ));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      final User? user = userCredential.user;
+      if (user != null) {
+        await user.reload();
+        setState(() => _currentUser = user);
+
+        if (user.emailVerified) {
+          final userDoc =
+              await _firestore.collection('users').doc(user.uid).get();
+          if (!userDoc.exists) {
+            // Create a new user document if it doesn't exist
+            await _firestore.collection('users').doc(user.uid).set({
+              'name': user.displayName ?? 'Google User',
+              'email': user.email ?? '',
+              'status': 'New User',
+              'about': '',
+              'location': '',
+              'profileImage': user.photoURL ?? '',
+              // Add any other default fields you need
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('New account created with Google.')),
+            );
+          }
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              transitionDuration: const Duration(milliseconds: 500),
+              pageBuilder: (_, __, ___) => const NavBar(),
+              transitionsBuilder: (_, anim, __, child) {
+                return FadeTransition(opacity: anim, child: child);
+              },
+            ),
+          );
+        } else {
+          setState(() => _showResendVerification = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  "Your email is not verified. Please check your inbox and spam folder."),
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print("Error signing in with Google: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to sign in with Google: $e')),
+      );
     } finally {
       setState(() => _isLoading = false);
     }
@@ -171,7 +242,8 @@ class _SignInScreenState extends State<SignInScreen>
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Password reset email sent. Check your inbox.'),
+                    content:
+                        Text('Password reset email sent. Check your inbox.'),
                     duration: Duration(seconds: 3),
                   ),
                 );
@@ -292,7 +364,8 @@ class _SignInScreenState extends State<SignInScreen>
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
-      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_passwordFocusNode),
+      onFieldSubmitted: (_) =>
+          FocusScope.of(context).requestFocus(_passwordFocusNode),
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: "Email",
@@ -304,7 +377,8 @@ class _SignInScreenState extends State<SignInScreen>
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.2),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -335,7 +409,8 @@ class _SignInScreenState extends State<SignInScreen>
             _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
             color: Colors.white70,
           ),
-          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+          onPressed: () =>
+              setState(() => _isPasswordVisible = !_isPasswordVisible),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -343,7 +418,8 @@ class _SignInScreenState extends State<SignInScreen>
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.2),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -358,31 +434,57 @@ class _SignInScreenState extends State<SignInScreen>
   }
 
   Widget _buildSignInButton() {
-    return ElevatedButton(
-      onPressed: _isLoading ? null : _signIn,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFFFC7C79),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 5,
-        shadowColor: Colors.black26,
-      ),
-      child: _isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: Color(0xFFFC7C79),
-                strokeWidth: 2,
-              ),
-            )
-          : const Text(
-              "Sign In",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+    return Column(
+      children: [
+        ElevatedButton(
+          onPressed: _isLoading ? null : _signIn,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFFFC7C79),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
+            elevation: 5,
+            shadowColor: Colors.black26,
+          ),
+          child: _isLoading
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFFC7C79),
+                    strokeWidth: 2,
+                  ),
+                )
+              : const Text(
+                  "Sign In",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton.icon(
+          onPressed: _isLoading ? null : _signInWithGoogle,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black87,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 5,
+            shadowColor: Colors.black26,
+          ),
+          icon: Image.asset(
+            'assets/images/google_logo.jpeg',
+            height: 24,
+          ),
+          label: const Text(
+            "Sign In with Google",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
     );
   }
 
@@ -439,7 +541,7 @@ class _SignInScreenState extends State<SignInScreen>
   }
 
   @override
-  void dispose() {
+  void dispose() {        
     _emailController.dispose();
     _passwordController.dispose();
     _passwordFocusNode.dispose();

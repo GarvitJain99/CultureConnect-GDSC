@@ -7,12 +7,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/services.dart'; // Import for Clipboard
+import 'package:flutter/services.dart';
 
 class CommunityChatScreen extends StatefulWidget {
   final String communityId;
 
-  CommunityChatScreen({required this.communityId});
+  const CommunityChatScreen({super.key, required this.communityId});
 
   @override
   _CommunityChatScreenState createState() => _CommunityChatScreenState();
@@ -61,7 +61,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
         });
       }
     } catch (e) {
-      print("Error loading community details: $e");
       setState(() {
         communityName = 'Error loading community';
         communityImageUrl = null;
@@ -85,7 +84,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
       {bool scrollToMessage = true}) {
     setState(() {
       _highlightedMessageId = messageId;
-      _isManualScroll = scrollToMessage; 
+      _isManualScroll = scrollToMessage;
     });
 
     _highlightTimer?.cancel();
@@ -239,7 +238,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
         _scrollToBottom();
       });
     } catch (e) {
-      print("Error sending message: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to send message. Please try again.")),
       );
@@ -255,7 +253,6 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
           .doc(messageId)
           .delete();
     } catch (e) {
-      print("Error deleting message: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to delete message. Please try again.")),
       );
@@ -279,8 +276,8 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
   }
 
   void openPollCreation() {
-    TextEditingController _questionController = TextEditingController();
-    List<TextEditingController> _optionControllers = [TextEditingController()];
+    TextEditingController questionController = TextEditingController();
+    List<TextEditingController> optionControllers = [TextEditingController()];
 
     showDialog(
       context: context,
@@ -307,7 +304,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: _questionController,
+                      controller: questionController,
                       decoration: InputDecoration(
                         labelText: "Poll Question",
                         labelStyle: TextStyle(color: Colors.deepPurple),
@@ -323,7 +320,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    ..._optionControllers.map((controller) {
+                    ...optionControllers.map((controller) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: TextField(
@@ -343,12 +340,12 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                           ),
                         ),
                       );
-                    }).toList(),
+                    }),
                     SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _optionControllers.add(TextEditingController());
+                          optionControllers.add(TextEditingController());
                         });
                       },
                       style: ElevatedButton.styleFrom(
@@ -377,8 +374,8 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (_questionController.text.trim().isEmpty ||
-                        _optionControllers.any(
+                    if (questionController.text.trim().isEmpty ||
+                        optionControllers.any(
                             (controller) => controller.text.trim().isEmpty)) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Please fill all fields.")),
@@ -387,8 +384,8 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                     }
 
                     Map<String, dynamic> poll = {
-                      'question': _questionController.text.trim(),
-                      'options': _optionControllers
+                      'question': questionController.text.trim(),
+                      'options': optionControllers
                           .map((controller) => {
                                 'text': controller.text.trim(),
                                 'votes': [],
@@ -425,8 +422,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
     );
   }
 
-  void openEventCreation() {
-  }
+  void openEventCreation() {}
 
   void _startReply(Map<String, dynamic> message, int index) {
     setState(() {

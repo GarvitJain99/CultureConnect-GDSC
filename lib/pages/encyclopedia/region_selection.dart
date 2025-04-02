@@ -6,7 +6,6 @@ class RegionSelectionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // List of regions with associated images
     final List<Map<String, String>> regions = [
       {"name": "North", "image": "assets/images/north/north.jpg"},
       {"name": "South", "image": "assets/images/south/south.jpg"},
@@ -19,13 +18,13 @@ class RegionSelectionPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Select a Region"),
-        backgroundColor: const Color(0xFFFC7C79), // AppBar Color
-        elevation: 0, // Removes shadow for a cleaner look
+        backgroundColor: const Color(0xFFFC7C79), 
+        elevation: 0, 
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], // Gradient Background
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], 
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -46,8 +45,8 @@ class RegionSelectionPage extends StatelessWidget {
                   );
                 },
                 child: Container(
-                  margin: const EdgeInsets.only(bottom: 16), // Spacing between cards
-                  height: 160, // Card height
+                  margin: const EdgeInsets.only(bottom: 16), 
+                  height: 160, 
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     image: DecorationImage(
@@ -65,14 +64,12 @@ class RegionSelectionPage extends StatelessWidget {
                   ),
                   child: Stack(
                     children: [
-                      // Dark overlay for better text visibility
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           color: Colors.black.withOpacity(0.4),
                         ),
                       ),
-                      // Region name in center
                       Center(
                         child: Text(
                           regions[index]["name"]!,

@@ -54,7 +54,6 @@ Make sure that the content is almost always in points
       final data = jsonDecode(response.body);
       String textContent = data['candidates'][0]['content']['parts'][0]['text'];
 
-      // Extract image URLs using RegExp
       RegExp regex = RegExp(r'(https?:\/\/[^\s]+\.(?:jpg|png|webp))');
       List<String> imageUrls = regex
           .allMatches(textContent)
@@ -62,7 +61,7 @@ Make sure that the content is almost always in points
           .toList();
 
       return {
-        "text": textContent.replaceAll(regex, ''), // Remove URLs from text
+        "text": textContent.replaceAll(regex, ''), 
         "images": imageUrls,
       };
     } else {

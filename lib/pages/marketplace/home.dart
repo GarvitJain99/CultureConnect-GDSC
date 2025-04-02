@@ -90,38 +90,29 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFFC7C79), Color(0xFFFC7C79)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        child: AppBar(
+          title: const Text(
+            "Marketplace",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 22,
+              color: Colors.white,
             ),
           ),
-          child: AppBar(
-            title: const Text(
-              "Marketplace",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-                color: Colors.white,
-              ),
+          backgroundColor: Color(0xFFFC7C79),
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.shopping_cart, color: Colors.white),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const CartPage())),
             ),
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart, color: Colors.white),
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const CartPage())),
-              ),
-              IconButton(
-                icon: const Icon(Icons.person, color: Colors.white),
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const UserProfilePage())),
-              ),
-            ],
-          ),
+            IconButton(
+              icon: const Icon(Icons.person, color: Colors.white),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const UserProfilePage())),
+            ),
+          ],
         ),
       ),
       endDrawer: Drawer(
@@ -151,7 +142,6 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
             ),
             const SizedBox(height: 10),
 
-            // Category Dropdown
             Text("Select a Category", style: _sectionTitleStyle),
             const SizedBox(height: 4),
             Container(
@@ -171,7 +161,6 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
 
             const SizedBox(height: 10),
 
-            // Price Section
             Text("Price Range", style: _sectionTitleStyle),
             const SizedBox(height: 8),
             Column(
@@ -196,7 +185,6 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
 
             const SizedBox(height: 15),
 
-            // Buttons Row
             Row(
               children: [
                 Expanded(
@@ -242,7 +230,7 @@ class _MarketplaceHomeState extends State<MarketplaceHome> {
         ),
         child: Column(
           children: [
-            const SizedBox(height: kToolbarHeight + 35),
+            const SizedBox(height: kToolbarHeight + 45),
             Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(

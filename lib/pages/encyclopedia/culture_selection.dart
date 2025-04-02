@@ -57,13 +57,13 @@ class CultureSelectionPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Select a Culture in $region"),
-        backgroundColor: const Color(0xFFFC7C79), // AppBar Color
+        backgroundColor: const Color(0xFFFC7C79),
         elevation: 0,
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], // Background Gradient
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -72,10 +72,10 @@ class CultureSelectionPage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // Two columns per row
+              crossAxisCount: 2, 
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              childAspectRatio: 1, // Ensures square-shaped cards
+              childAspectRatio: 1, 
             ),
             itemCount: cultures[region]!.length,
             itemBuilder: (context, index) {
@@ -93,7 +93,6 @@ class CultureSelectionPage extends StatelessWidget {
                 },
                 child: Stack(
                   children: [
-                    // Background image
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
@@ -111,14 +110,12 @@ class CultureSelectionPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Dark overlay for better text visibility
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         color: Colors.black.withOpacity(0.4),
                       ),
                     ),
-                    // State name in center
                     Center(
                       child: Text(
                         culture,

@@ -119,7 +119,8 @@ class _SignUpScreenState extends State<SignUpScreen>
           errorMessage = 'An error occurred: ${e.message}';
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage), duration: const Duration(seconds: 3)),
+        SnackBar(
+            content: Text(errorMessage), duration: const Duration(seconds: 3)),
       );
     } finally {
       setState(() => _isLoading = false);
@@ -211,11 +212,12 @@ class _SignUpScreenState extends State<SignUpScreen>
                             _buildConfirmPasswordField(),
                             if (_passwordMatchError != null)
                               Padding(
-                                padding: const EdgeInsets.only(left: 8.0, top: 5),
+                                padding:
+                                    const EdgeInsets.only(left: 8.0, top: 5),
                                 child: Text(
                                   _passwordMatchError!,
                                   style: const TextStyle(
-                                    color:  Color.fromARGB(255, 244, 9, 9),
+                                    color: Color.fromARGB(255, 244, 9, 9),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -243,7 +245,8 @@ class _SignUpScreenState extends State<SignUpScreen>
     return TextFormField(
       controller: _nameController,
       textInputAction: TextInputAction.next,
-      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_emailFocusNode),
+      onFieldSubmitted: (_) =>
+          FocusScope.of(context).requestFocus(_emailFocusNode),
       textCapitalization: TextCapitalization.words,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -256,7 +259,8 @@ class _SignUpScreenState extends State<SignUpScreen>
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.2),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -275,7 +279,8 @@ class _SignUpScreenState extends State<SignUpScreen>
       controller: _emailController,
       focusNode: _emailFocusNode,
       textInputAction: TextInputAction.next,
-      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_passwordFocusNode),
+      onFieldSubmitted: (_) =>
+          FocusScope.of(context).requestFocus(_passwordFocusNode),
       keyboardType: TextInputType.emailAddress,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -288,7 +293,8 @@ class _SignUpScreenState extends State<SignUpScreen>
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.2),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -307,7 +313,8 @@ class _SignUpScreenState extends State<SignUpScreen>
       controller: _passwordController,
       focusNode: _passwordFocusNode,
       textInputAction: TextInputAction.next,
-      onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(_confirmPasswordFocusNode),
+      onFieldSubmitted: (_) =>
+          FocusScope.of(context).requestFocus(_confirmPasswordFocusNode),
       obscureText: !_isPasswordVisible,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
@@ -328,7 +335,8 @@ class _SignUpScreenState extends State<SignUpScreen>
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.2),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -347,7 +355,7 @@ class _SignUpScreenState extends State<SignUpScreen>
       valueListenable: _passwordController,
       builder: (context, value, child) {
         if (value.text.isEmpty) return const SizedBox.shrink();
-        
+
         final strength = _zxcvbn.evaluate(value.text);
         final score = strength.score?.toDouble() ?? 0.0;
         final label = _getPasswordStrengthLabel(score);
@@ -399,7 +407,8 @@ class _SignUpScreenState extends State<SignUpScreen>
         ),
         filled: true,
         fillColor: Colors.white.withOpacity(0.2),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
