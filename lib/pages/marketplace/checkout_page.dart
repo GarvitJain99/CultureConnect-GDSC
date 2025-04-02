@@ -91,7 +91,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         'quantity': widget.buyNowItemQuantity,
       });
     } else {
-      // Regular cart checkout flow: fetch all items from the cart
       final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
       final cartRef = userRef.collection('cart');
       final snapshot = await cartRef.get();
@@ -193,7 +192,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
 
     try {
-      await _clearCart(user.uid); // Clear the cart after any purchase
+      await _clearCart(user.uid);
     } catch (e) {
       print("Error clearing cart: $e");
     }

@@ -157,7 +157,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // *Top Bar*
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -192,7 +191,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             children: [
-                              // *Profile Picture with Edit Icon*
                               GestureDetector(
                                 onTap: _showImageSourceDialog,
                                 child: Stack(
@@ -220,12 +218,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                               const SizedBox(height: 20),
 
-                              // *Profile Input Fields*
                               _buildProfileCard(),
 
                               const SizedBox(height: 20),
 
-                              // *Save Button*
                               ElevatedButton(
                                 onPressed: _saveProfile,
                                 style: ElevatedButton.styleFrom(

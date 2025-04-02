@@ -179,7 +179,6 @@ class _PickupLocationPageState extends State<PickupLocationPage> {
                 });
               }
             } catch (e) {
-              print("Error fetching address: $e");
               Navigator.pop(context, {
                 'latitude': _mapTapLocation!.latitude,
                 'longitude': _mapTapLocation!.longitude,

@@ -54,12 +54,16 @@ dependencies:
   syncfusion_flutter_sliders: ^28.2.12
   intl: ^0.20.2
   zxcvbn: ^1.0.0
+  google_generative_ai: ^0.4.6
+  googleapis: ^14.0.0
+  googleapis_auth: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.3 
   intl_utils: ^2.8.10
-
+  
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -86,6 +90,7 @@ flutter:
     - assets/images/east/
     - assets/images/west/
     - assets/images/south/
+    - assets/credentials/credentials.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -117,3 +122,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true 
+  ios: true
+  image_path: "assets/images/logo.jpeg"

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class OrderConfirmationPage extends StatelessWidget {
   final String paymentId;
 
-  const OrderConfirmationPage({Key? key, required this.paymentId}) : super(key: key);
+  const OrderConfirmationPage({super.key, required this.paymentId});
 
   @override
   Widget build(BuildContext context) {

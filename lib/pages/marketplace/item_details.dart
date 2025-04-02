@@ -61,13 +61,13 @@ class _ItemDetailsPageState extends State<ItemDetailsPage> {
                       MediaQuery.of(context).size.height * _imageHeightFactor,
                   floating: false,
                   pinned:
-                      false, // Set to false to completely remove app bar behavior
+                      false, 
                   flexibleSpace: _buildImageGallery(imageUrls),
                   backgroundColor: Colors.transparent,
-                  elevation: 0, // Remove shadow
-                  automaticallyImplyLeading: false, // Remove back button
-                  toolbarHeight: 0, // Make sure no toolbar space is taken
-                  collapsedHeight: 0, // Collapsed height to zero
+                  elevation: 0, 
+                  automaticallyImplyLeading: false, 
+                  toolbarHeight: 0,
+                  collapsedHeight: 0, 
                 ),
                 SliverToBoxAdapter(
                   child: Padding(

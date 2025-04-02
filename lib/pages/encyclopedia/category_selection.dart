@@ -26,13 +26,13 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFC7C79), // AppBar Color
+        backgroundColor: const Color(0xFFFC7C79),
         elevation: 0,
       ),
       body: Container(
         decoration: const BoxDecoration(
            gradient: LinearGradient(
-            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], // Gradient Background
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -46,7 +46,7 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
-                color: Colors.white, // Adjusted for better contrast
+                color: Colors.white, 
               ),
             ),
             const SizedBox(height: 20),
@@ -93,7 +93,6 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
                       ),
                       child: Stack(
                         children: [
-                          // Background image
                           ClipRRect(
                             borderRadius: BorderRadius.circular(14),
                             child: Image.asset(
@@ -103,14 +102,12 @@ class _CategorySelectionPageState extends State<CategorySelectionPage> {
                               height: double.infinity,
                             ),
                           ),
-                          // Dark overlay
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(14),
                               color: Colors.black.withOpacity(0.4),
                             ),
                           ),
-                          // Category name in the center
                           Center(
                             child: Text(
                               category,

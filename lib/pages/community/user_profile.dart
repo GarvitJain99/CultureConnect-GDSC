@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class UserProfileScreen extends StatelessWidget {
   final String userId;
-  const UserProfileScreen({required this.userId});
+  const UserProfileScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +34,11 @@ class UserProfileScreen extends StatelessWidget {
 
           return Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(  
-  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
-  begin: Alignment.topCenter,  
-  end: Alignment.bottomCenter, 
-),
+              gradient: LinearGradient(
+                colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
             child: Padding(
               padding: EdgeInsets.all(16),
@@ -58,7 +58,8 @@ class UserProfileScreen extends StatelessWidget {
                             radius: 50,
                             backgroundImage: userData['profileImage'] != ""
                                 ? NetworkImage(userData['profileImage'])
-                                : AssetImage('assets/images/default_profile.jpg')
+                                : AssetImage(
+                                        'assets/images/default_profile.jpg')
                                     as ImageProvider,
                           ),
                           SizedBox(height: 10),

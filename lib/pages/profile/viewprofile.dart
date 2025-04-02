@@ -78,7 +78,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // *Top Bar with Logout*
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -115,7 +114,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // *Profile Picture with Shadow*
                               Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -140,12 +138,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
                               const SizedBox(height: 20),
 
-                              // *Profile Details Card*
                               _buildProfileCard(),
 
                               const SizedBox(height: 20),
 
-                              // *Edit Profile Button*
                               ElevatedButton(
                                 onPressed: () => Navigator.push(
                                   context,
@@ -186,7 +182,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2), // Glassmorphism effect
+        color: Colors.white.withOpacity(0.2), 
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

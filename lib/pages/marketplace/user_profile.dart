@@ -14,7 +14,8 @@ class UserProfilePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Your Profile", style: TextStyle(color: Colors.white)),
+        title:
+            const Text("Your Profile", style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xFFFC7C79),
         elevation: 0,
       ),
@@ -33,19 +34,16 @@ class UserProfilePage extends StatelessWidget {
                 var userData = snapshot.data!;
                 return Container(
                   decoration: BoxDecoration(
-          gradient: LinearGradient(  
-  colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],  
-  begin: Alignment.topCenter,  
-  end: Alignment.bottomCenter, 
-),
-        ),
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
-                      //  crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        
-                        // User Profile Info
                         Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
@@ -65,7 +63,8 @@ class UserProfilePage extends StatelessWidget {
                                 Text(
                                   userData['name'],
                                   style: const TextStyle(
-                                      fontSize: 22, fontWeight: FontWeight.bold),
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold),
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 5),
@@ -89,7 +88,8 @@ class UserProfilePage extends StatelessWidget {
                                     backgroundColor: Color(0xFFFC7C79),
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10)),
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 30, vertical: 12),
                                   ),
@@ -101,7 +101,7 @@ class UserProfilePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                  
+
                         Text("Your Listed Items",
                             style: TextStyle(
                                 fontSize: 20,
@@ -136,11 +136,11 @@ class UserProfilePage extends StatelessWidget {
                                     (item['imageUrls'] as List<dynamic>?)
                                         ?.cast<String>();
                                 String? firstImageUrl;
-                  
+
                                 if (imageUrls != null && imageUrls.isNotEmpty) {
                                   firstImageUrl = imageUrls.first;
                                 }
-                  
+
                                 return ListTile(
                                   leading: SizedBox(
                                     width: 60,
@@ -168,15 +168,15 @@ class UserProfilePage extends StatelessWidget {
                                           ),
                                   ),
                                   title: Text(item['name'],
-                                      style:
-                                          const TextStyle(fontWeight: FontWeight.w500)),
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w500)),
                                   subtitle: Text("₹${item['price']}"),
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ItemDetailsPage(
-                                            itemId: item.id),
+                                        builder: (context) =>
+                                            ItemDetailsPage(itemId: item.id),
                                       ),
                                     );
                                   },
@@ -185,9 +185,9 @@ class UserProfilePage extends StatelessWidget {
                             );
                           },
                         ),
-                  
+
                         const SizedBox(height: 20),
-                  
+
                         Text("Ongoing Orders",
                             style: TextStyle(
                                 fontSize: 20,
@@ -216,12 +216,11 @@ class UserProfilePage extends StatelessWidget {
                                 var order = orders[index];
                                 var items = List<Map<String, dynamic>>.from(
                                     order['items']);
-                                final DateTime orderDate = (order['timestamp']
-                                        as Timestamp)
-                                    .toDate();
+                                final DateTime orderDate =
+                                    (order['timestamp'] as Timestamp).toDate();
                                 final String formattedDate =
                                     DateFormat('dd-MM-yyyy').format(orderDate);
-                  
+
                                 return Card(
                                   elevation: 3,
                                   shape: RoundedRectangleBorder(
@@ -242,10 +241,8 @@ class UserProfilePage extends StatelessWidget {
                                         const Text("Items:",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w600)),
-                                        ...items
-                                            .map((item) => Text(
-                                                "- ${item['name']} (x${item['quantity']})"))
-                                            .toList(),
+                                        ...items.map((item) => Text(
+                                            "- ${item['name']} (x${item['quantity']})")),
                                         const SizedBox(height: 8),
                                         Text(
                                             "Total Price: ₹${order['total_price']}",
@@ -268,10 +265,13 @@ class UserProfilePage extends StatelessWidget {
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(8)),
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 15, vertical: 8),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15,
+                                                      vertical: 8),
                                             ),
-                                            child: const Text("Mark as Completed",
+                                            child: const Text(
+                                                "Mark as Completed",
                                                 style: TextStyle(fontSize: 14)),
                                           ),
                                         ),
@@ -283,9 +283,9 @@ class UserProfilePage extends StatelessWidget {
                             );
                           },
                         ),
-                  
+
                         const SizedBox(height: 20),
-                  
+
                         Text("Previous Orders",
                             style: TextStyle(
                                 fontSize: 20,
@@ -314,12 +314,11 @@ class UserProfilePage extends StatelessWidget {
                                 var order = orders[index];
                                 var items = List<Map<String, dynamic>>.from(
                                     order['items'] ?? []);
-                                final DateTime orderDate = (order['timestamp']
-                                        as Timestamp)
-                                    .toDate();
+                                final DateTime orderDate =
+                                    (order['timestamp'] as Timestamp).toDate();
                                 final String formattedDate =
                                     DateFormat('dd-MM-yyyy').format(orderDate);
-                  
+
                                 return Card(
                                   elevation: 3,
                                   shape: RoundedRectangleBorder(
@@ -340,10 +339,8 @@ class UserProfilePage extends StatelessWidget {
                                         const Text("Items:",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w600)),
-                                        ...items
-                                            .map((item) => Text(
-                                                "- ${item['name']} (x${item['quantity']})"))
-                                            .toList(),
+                                        ...items.map((item) => Text(
+                                            "- ${item['name']} (x${item['quantity']})")),
                                         const SizedBox(height: 8),
                                         Text(
                                             "Total Price: ₹${order['total_price']}",
@@ -374,12 +371,10 @@ class UserProfilePage extends StatelessWidget {
     final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
 
     try {
-      // Move order to "previous_orders"
       await userRef
           .collection('previous_orders')
           .add(Map<String, dynamic>.from(order.data() as Map));
 
-      // Remove order from "ongoing_orders"
       await userRef.collection('ongoing_orders').doc(order.id).delete();
     } catch (e) {
       print("Error marking order as completed: $e");

@@ -21,7 +21,7 @@ class _SellItemPageState extends State<SellItemPage> {
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
-  List<File> _selectedImages = [];
+  final List<File> _selectedImages = [];
   bool _isUploading = false;
   LatLng? selectedLocation;
   String? selectedAddress;
@@ -115,7 +115,7 @@ class _SellItemPageState extends State<SellItemPage> {
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
         'description': _descriptionController.text,
-        'imageUrls': imageUrls, // Store list of image URLs
+        'imageUrls': imageUrls, 
         'category': _selectedCategory,
         'sellerId': userId,
         'location': {
@@ -133,7 +133,7 @@ class _SellItemPageState extends State<SellItemPage> {
           .set({
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
-        'imageUrls': imageUrls, // Store list of image URLs
+        'imageUrls': imageUrls, 
         'status': 'active',
       });
 
@@ -169,7 +169,7 @@ class _SellItemPageState extends State<SellItemPage> {
               height: 120,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: _selectedImages.length + 1, // +1 for the add button
+                itemCount: _selectedImages.length + 1, 
                 itemBuilder: (context, index) {
                   if (index == _selectedImages.length) {
                     return Padding(

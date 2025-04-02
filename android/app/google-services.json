@@ -12,7 +12,20 @@
           "package_name": "com.example.cultureconnect"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "641969076786-h3vagmn2sj6pfmfcjhr11q45v45pmetm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cultureconnect",
+            "certificate_hash": "8b8e0d36a48846066ffd53fc31ced80eeb38e009"
+          }
+        },
+        {
+          "client_id": "641969076786-9g6gc7k5o51j5r8orcjjd75ci5n9i9n1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBJnLNkx5xuxnB2k_vVDCUFISMG1__cb1Y"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "641969076786-9g6gc7k5o51j5r8orcjjd75ci5n9i9n1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "641969076786-vhvmrmv60qp3s7k13lgk8up0mbm1pu6h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cultureconnect"
+              }
+            }
+          ]
         }
       }
     }

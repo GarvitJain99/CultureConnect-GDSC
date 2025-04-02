@@ -10,6 +10,8 @@
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleURLTypes</key>
+	<string>com.googleusercontent.apps.641969076786-vhvmrmv60qp3s7k13lgk8up0mbm1pu6h</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location to show nearby places.</string>

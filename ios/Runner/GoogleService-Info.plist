@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>641969076786-vhvmrmv60qp3s7k13lgk8up0mbm1pu6h.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.641969076786-vhvmrmv60qp3s7k13lgk8up0mbm1pu6h</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>641969076786-h3vagmn2sj6pfmfcjhr11q45v45pmetm.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDRkcMI541yGJQhR71uk3JN6brbJlvsXUA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>641969076786</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.cultureconnect</string>
+	<key>PROJECT_ID</key>
+	<string>cultureconnect-gdsc</string>
+	<key>STORAGE_BUCKET</key>
+	<string>cultureconnect-gdsc.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:641969076786:ios:69b9a06d18e1b78f379a2b</string>
+</dict>
+</plist>

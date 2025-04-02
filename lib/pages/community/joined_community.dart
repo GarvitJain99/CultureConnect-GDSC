@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'chat_community.dart';
 
 class JoinedCommunityScreen extends StatefulWidget {
+  const JoinedCommunityScreen({super.key});
+
   @override
   _JoinedCommunityScreenState createState() => _JoinedCommunityScreenState();
 }
@@ -33,12 +35,12 @@ class _JoinedCommunityScreenState extends State<JoinedCommunityScreen> {
             fontSize: screenWidth * 0.07,
           ),
         ),
-        backgroundColor: Color(0xFFFC7C79), // Matching AppBar color
+        backgroundColor: Color(0xFFFC7C79), 
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], // Matching background gradient
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)], 
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -75,9 +77,9 @@ class _JoinedCommunityScreenState extends State<JoinedCommunityScreen> {
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
                   elevation: 4,
-                  color: Colors.white.withOpacity(0.85), // Matching card color
+                  color: Colors.white.withOpacity(0.85), 
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // Matching card shape
+                    borderRadius: BorderRadius.circular(12), 
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(screenWidth * 0.04),
@@ -128,7 +130,7 @@ class _JoinedCommunityScreenState extends State<JoinedCommunityScreen> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFF8A87), // Matching "Open" button color from HomeScreen
+                            backgroundColor: Color(0xFFFF8A87), 
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
