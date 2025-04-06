@@ -24,18 +24,18 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Your Cart", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text("Your Cart", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
-           gradient: LinearGradient(
-        colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ),
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         child: Column(
           children: [
@@ -72,51 +72,58 @@ class CartPage extends StatelessWidget {
                         margin: const EdgeInsets.only(bottom: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withOpacity(0.2), // Slightly more opaque
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 5,
-                              spreadRadius: 4,
+                              color: Colors.black.withOpacity(0.3), // Slightly darker shadow
+                            
                             ),
                           ],
                         ),
                         child: ListTile(
-                          contentPadding: const EdgeInsets.all(02),
+                          contentPadding: const EdgeInsets.all(12), // Increased padding
                           leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(15), // More rounded image
                             child: Image.network(
                               item['imageUrl'],
-                              width: 80,
-                              height: 80,
+                              width: 100, // Slightly larger image
+                              height: 100,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const SizedBox(
+                                  width: 90,
+                                  height: 90,
+                                  child: Center(child: Icon(Icons.image_not_supported, color: Colors.white)),
+                                );
+                              },
                             ),
                           ),
                           title: Text(
                             item['name'],
                             style: const TextStyle(
-                              fontSize: 16,
+                              fontSize: 18, // Slightly larger title
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Colors.white,
                             ),
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 5),
+                              const SizedBox(height: 8),
                               Text(
                                 "₹${item['price']}",
                                 style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
+                                  fontSize: 16,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              const SizedBox(height: 0 ),
+                              const SizedBox(height: 8),
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.remove, color: Colors.black),
+                                    icon: const Icon(Icons.remove, color: Colors.white),
                                     onPressed: () {
                                       if (item['quantity'] > 1) {
                                         FirebaseFirestore.instance
@@ -138,13 +145,13 @@ class CartPage extends StatelessWidget {
                                   Text(
                                     item['quantity'].toString(),
                                     style: const TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.add, color: Colors.black),
+                                    icon: const Icon(Icons.add, color: Colors.white),
                                     onPressed: () {
                                       FirebaseFirestore.instance
                                           .collection('users')
@@ -187,17 +194,18 @@ class CartPage extends StatelessWidget {
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.white.withOpacity(0.9), // Slightly transparent white
+                        foregroundColor: Colors.black,
                         padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        shadowColor: Colors.black.withOpacity(0.2),
-                        elevation: 5,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), // More rounded button
+                        shadowColor: Colors.black.withOpacity(0.3),
+                        elevation: 7, // Slightly higher elevation
                       ),
                       child: const Center(
                         child: Text(
                           'Proceed to Checkout',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black,
                           ),
@@ -211,6 +219,6 @@ class CartPage extends StatelessWidget {
           ],
         ),
       ),
-   ); 
- }
+    );
+  }
 }

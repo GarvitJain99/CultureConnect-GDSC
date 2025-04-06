@@ -52,7 +52,7 @@ class _SellItemPageState extends State<SellItemPage> {
     setState(() {
       _selectedImages.addAll(pickedFiles.map((file) => File(file.path)));
     });
-    }
+  }
 
   void _showImageSourceDialog() {
     showModalBottomSheet(
@@ -61,7 +61,7 @@ class _SellItemPageState extends State<SellItemPage> {
         children: [
           ListTile(
             leading: const Icon(Icons.camera_alt),
-            title: const Text("Take a Photo"),
+            title: const Text("Take a Photo", style: TextStyle(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
               _pickImage(ImageSource.camera);
@@ -69,7 +69,7 @@ class _SellItemPageState extends State<SellItemPage> {
           ),
           ListTile(
             leading: const Icon(Icons.image),
-            title: const Text("Choose from Gallery"),
+            title: const Text("Choose from Gallery", style: TextStyle(fontSize: 16)),
             onTap: () {
               Navigator.pop(context);
               _pickImage(ImageSource.gallery);
@@ -89,7 +89,8 @@ class _SellItemPageState extends State<SellItemPage> {
         _selectedImages.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text("Please fill all fields and select at least one image")),
+            content: Text("Please fill all fields and select at least one image",
+                style: TextStyle(color: Colors.white))),
       );
       return;
     }
@@ -115,7 +116,7 @@ class _SellItemPageState extends State<SellItemPage> {
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
         'description': _descriptionController.text,
-        'imageUrls': imageUrls, 
+        'imageUrls': imageUrls,
         'category': _selectedCategory,
         'sellerId': userId,
         'location': {
@@ -133,18 +134,22 @@ class _SellItemPageState extends State<SellItemPage> {
           .set({
         'name': _nameController.text,
         'price': double.parse(_priceController.text),
-        'imageUrls': imageUrls, 
+        'imageUrls': imageUrls,
         'status': 'active',
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Item listed successfully!")),
+        const SnackBar(
+            content: Text("Item listed successfully!",
+                style: TextStyle(color: Colors.white))),
       );
 
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${e.toString()}")),
+        SnackBar(
+            content: Text("Error: ${e.toString()}",
+                style: const TextStyle(color: Colors.white))),
       );
     }
 
@@ -160,141 +165,248 @@ class _SellItemPageState extends State<SellItemPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Sell an Item")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 120,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _selectedImages.length + 1, 
-                itemBuilder: (context, index) {
-                  if (index == _selectedImages.length) {
+       extendBodyBehindAppBar: false,
+      appBar: AppBar(
+        title: const Text("Sell an Item", style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white
+          )
+          ),
+        backgroundColor: Color(0xFFFC7C79),
+        elevation: 0,
+        
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _selectedImages.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == _selectedImages.length) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: GestureDetector(
+                          onTap: _showImageSourceDialog,
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.grey),
+                              color: Colors.grey[200],
+                            ),
+                            child: const Icon(Icons.add_a_photo,
+                                size: 40, color: Colors.grey),
+                          ),
+                        ),
+                      );
+                    }
                     return Padding(
                       padding: const EdgeInsets.only(left: 8.0),
-                      child: GestureDetector(
-                        onTap: _showImageSourceDialog,
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: const Icon(Icons.add_a_photo,
-                              size: 40, color: Colors.grey),
-                        ),
-                      ),
-                    );
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.grey),
-                            image: DecorationImage(
-                              image: FileImage(_selectedImages[index]),
-                              fit: BoxFit.cover,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.grey),
+                              image: DecorationImage(
+                                image: FileImage(_selectedImages[index]),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: -5,
-                          right: -5,
-                          child: IconButton(
-                            icon: const Icon(Icons.cancel, color: Colors.red),
-                            iconSize: 20,
-                            onPressed: () => _removeImage(index),
+                          Positioned(
+                            top: -5,
+                            right: -5,
+                            child: IconButton(
+                              icon: const Icon(Icons.cancel, color: Colors.red),
+                              iconSize: 20,
+                              onPressed: () => _removeImage(index),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: "Item Name")),
-            TextField(
-                controller: _priceController,
-                decoration: const InputDecoration(labelText: "Price"),
-                keyboardType: TextInputType.number),
-            TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: "Description"),
-              maxLines: null,
-              minLines: 3,
-            ),
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: "Category"),
-              value: _selectedCategory,
-              items: _categories.map((category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Text(
-                    category,
-                    style: const TextStyle(fontWeight: FontWeight.normal),
-                  ),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedCategory = newValue;
-                  _categoryController.text = newValue ?? '';
-                });
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please select a category';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _locationController,
-              readOnly: true,
-              decoration: InputDecoration(
-                labelText: "Pickup Location",
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.location_on),
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PickupLocationPage(),
+                        ],
                       ),
                     );
-
-                    if (result != null && result is Map) {
-                      setState(() {
-                        _latitude = result['latitude'];
-                        _longitude = result['longitude'];
-                        selectedAddress = result['address'];
-                        _locationController.text = selectedAddress ?? '';
-                      });
-                    }
                   },
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            _isUploading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: sellItem, child: const Text("Sell Item")),
-          ],
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _nameController,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  labelText: "Item Name",
+                  labelStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                   
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _priceController,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  labelText: "Price",
+                  labelStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: null,
+                minLines: 3,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  labelText: "Description",
+                  labelStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  labelText: "Category",
+                  labelStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    
+                        
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                value: _selectedCategory,
+                items: _categories.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(
+                      category,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.normal, fontSize: 16),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedCategory = newValue;
+                    _categoryController.text = newValue ?? '';
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please select a category';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _locationController,
+                readOnly: true,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  labelText: "Pickup Location",
+                  labelStyle: const TextStyle(fontSize: 16, color: Colors.black87),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.location_on, color: Color(0xFFFC7C79)),
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PickupLocationPage(),
+                        ),
+                      );
+
+                      if (result != null && result is Map) {
+                        setState(() {
+                          _latitude = result['latitude'];
+                          _longitude = result['longitude'];
+                          selectedAddress = result['address'];
+                          _locationController.text = selectedAddress ?? '';
+                        });
+                      }
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              _isUploading
+                  ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFC7C79)),
+                    )
+                  : ElevatedButton(
+                      onPressed: sellItem,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFFC7C79),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        textStyle: const TextStyle(fontSize: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                      child: const Text("Sell Item"),
+                    ),
+            ],
+          ),
         ),
       ),
-     );
+    );
   }
 }
