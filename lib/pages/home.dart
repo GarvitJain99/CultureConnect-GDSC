@@ -34,13 +34,14 @@ class _HomePageState extends State<HomePage> {
     {'date': 'April 6, 2025', 'name': 'Ram Navami'},
   ];
 
-  String _funFact = "✨ Did you know? The Kumbh Mela is the world's largest peaceful gathering with millions of pilgrims attending!\n";
+  String _funFact =
+      "✨ Did you know? The Kumbh Mela is the world's largest peaceful gathering with millions of pilgrims attending!\n";
   bool _isLoadingFunFact = false;
 
   @override
   void initState() {
     super.initState();
-    _generateFunFact(); 
+    _generateFunFact();
   }
 
   Future<void> _generateFunFact() async {
@@ -48,14 +49,16 @@ class _HomePageState extends State<HomePage> {
       _isLoadingFunFact = true;
     });
     try {
-      final model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: geminiApiKey);
-      final prompt = 'Generate a short and interesting fun fact about one of the many cultures from all parts of India and be specifc about the culture. Do the above without any extra information and formatting such as bold text and images or points. Keep it in 15-20 words. Add some emojis if sensible to elaborate the idea';
+      final model =
+          GenerativeModel(model: 'gemini-2.0-flash', apiKey: geminiApiKey);
+      final prompt =
+          'Generate a short and interesting fun fact about one of the many cultures from all parts of India and be specifc about the culture. Do the above without any extra information and formatting such as bold text and images or points. Keep it in 15-20 words. Add some emojis if sensible to elaborate the idea';
       final response = await model.generateContent([Content.text(prompt)]);
       setState(() {
         _funFact = response.text ?? "Failed to load fun fact.";
         _isLoadingFunFact = false;
       });
-    } catch (e) {   
+    } catch (e) {
       setState(() {
         _funFact = "Failed to load fun fact.";
         _isLoadingFunFact = false;
@@ -138,7 +141,24 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 20),
-              _sectionTitle("Cultures"),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                _sectionTitle("Cultures"),
+                TextButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RegionSelectionPage(),
+                    ),
+                  ),
+                  child: Text(
+                    "See More",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ]),
               _cardContainer(
                 horizontalScrollList(cultureitems, cultureimages, context),
               ),

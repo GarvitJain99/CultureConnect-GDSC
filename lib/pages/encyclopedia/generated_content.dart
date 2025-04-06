@@ -14,7 +14,6 @@ class GeneratedContentPage extends StatefulWidget {
 
 class _GeneratedContentPageState extends State<GeneratedContentPage> {
   String generatedContent = "Fetching details...";
-  List<String> imageUrls = [];
   final GeminiService _geminiService = GeminiService();
 
   @override
@@ -27,40 +26,46 @@ class _GeneratedContentPageState extends State<GeneratedContentPage> {
     var result =
         await _geminiService.generateResponse(widget.culture, widget.category);
 
-    print("Extracted Image URLs: ${result["images"]}"); 
-
     setState(() {
       generatedContent = result["text"];
-
-      List<dynamic> dynamicUrls = result["images"] ?? [];
-      imageUrls = dynamicUrls
-          .map((e) => e.toString())
-          .where((url) => url.isNotEmpty)
-          .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("${widget.category} in ${widget.culture}")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(
+        title: Text("${widget.category} in ${widget.culture}"),
+        backgroundColor: const Color(0xFFFC7C79),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Stack(
           children: [
-            MarkdownBody(
-              data: generatedContent,
-              selectable: true,
-            ),
-            const SizedBox(height: 16),
-            ...imageUrls.map((url) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Image.network(url,
-                      errorBuilder: (context, error, stackTrace) {
-                    return const Text("Image failed to load");
-                  }),
-                )),
+            if (generatedContent == "Fetching details...")
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MarkdownBody(
+                      data: generatedContent,
+                      selectable: true,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

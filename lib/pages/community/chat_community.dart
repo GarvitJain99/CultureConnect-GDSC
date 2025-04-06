@@ -168,7 +168,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                 ),
               ),
             ),
-            backgroundColor: Colors.deepPurple,
+            backgroundColor: Color(0xFFFC7C79),
             iconTheme: IconThemeData(color: Colors.white),
             centerTitle: true,
           ),
@@ -295,7 +295,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.deepPurple,
+                    color: Color(0xFFFC7C79),
                   ),
                 ),
               ),
@@ -307,14 +307,13 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                       controller: questionController,
                       decoration: InputDecoration(
                         labelText: "Poll Question",
-                        labelStyle: TextStyle(color: Colors.deepPurple),
+                        labelStyle: TextStyle(color: Colors.black),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepPurple),
+                          borderSide: BorderSide(color: Colors.black),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.deepPurple, width: 2),
+                          borderSide: BorderSide(color: Colors.black, width: 2),
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -327,14 +326,14 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                           controller: controller,
                           decoration: InputDecoration(
                             labelText: "Option",
-                            labelStyle: TextStyle(color: Colors.deepPurple),
+                            labelStyle: TextStyle(color: Colors.black),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.deepPurple),
+                              borderSide: BorderSide(color: Colors.black),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.deepPurple, width: 2),
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 2),
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
@@ -349,7 +348,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         });
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Color(0xFFFC7C79),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -361,54 +360,60 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (questionController.text.trim().isEmpty ||
+                              optionControllers.any((controller) =>
+                                  controller.text.trim().isEmpty)) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text("Please fill all fields.")),
+                            );
+                            return;
+                          }
+
+                          Map<String, dynamic> poll = {
+                            'question': questionController.text.trim(),
+                            'options': optionControllers
+                                .map((controller) => {
+                                      'text': controller.text.trim(),
+                                      'votes': [],
+                                    })
+                                .toList(),
+                          };
+
+                          sendMessage(poll: poll);
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFFC7C79),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                        ),
+                        child: Text(
+                          "Create",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 239, 25, 10),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ])
                   ],
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    "Cancel",
-                    style: TextStyle(color: Colors.red, fontSize: 16),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (questionController.text.trim().isEmpty ||
-                        optionControllers.any(
-                            (controller) => controller.text.trim().isEmpty)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Please fill all fields.")),
-                      );
-                      return;
-                    }
-
-                    Map<String, dynamic> poll = {
-                      'question': questionController.text.trim(),
-                      'options': optionControllers
-                          .map((controller) => {
-                                'text': controller.text.trim(),
-                                'votes': [],
-                              })
-                          .toList(),
-                    };
-
-                    sendMessage(poll: poll);
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  ),
-                  child: Text(
-                    "Create",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
-              ],
             );
           },
         );
@@ -878,7 +883,7 @@ class _CommunityChatScreenState extends State<CommunityChatScreen> {
                                 ? Row(
                                     children: [
                                       Icon(Icons.image,
-                                          color: Colors.deepPurple),
+                                          color: Color(0xFFFC7C79)),
                                       SizedBox(width: 8),
                                       Text(
                                         '[Image]',
