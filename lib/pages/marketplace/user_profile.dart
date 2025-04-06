@@ -55,8 +55,12 @@ class UserProfilePage extends StatelessWidget {
                               children: [
                                 CircleAvatar(
                                   radius: 60,
-                                  backgroundImage: NetworkImage(
-                                      userData['profileImage'] ?? ""),
+                                  backgroundImage: userData['profileImage'] !=
+                                          ""
+                                      ? NetworkImage(userData['profileImage'])
+                                      : AssetImage(
+                                              'assets/images/default_profile.jpg')
+                                          as ImageProvider,
                                   backgroundColor: Colors.grey.shade300,
                                 ),
                                 const SizedBox(height: 15),
@@ -101,7 +105,6 @@ class UserProfilePage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-
                         Text("Your Listed Items",
                             style: TextStyle(
                                 fontSize: 20,
@@ -185,9 +188,7 @@ class UserProfilePage extends StatelessWidget {
                             );
                           },
                         ),
-
                         const SizedBox(height: 20),
-
                         Text("Ongoing Orders",
                             style: TextStyle(
                                 fontSize: 20,
@@ -283,9 +284,7 @@ class UserProfilePage extends StatelessWidget {
                             );
                           },
                         ),
-
                         const SizedBox(height: 20),
-
                         Text("Previous Orders",
                             style: TextStyle(
                                 fontSize: 20,
