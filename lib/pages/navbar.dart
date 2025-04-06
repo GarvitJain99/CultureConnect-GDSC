@@ -1,3 +1,4 @@
+import 'package:cultureconnect/pages/community/home.dart';
 import 'package:cultureconnect/pages/home.dart';
 import 'package:cultureconnect/pages/marketplace/home.dart';
 import 'package:cultureconnect/pages/profile/viewprofile.dart';
@@ -21,7 +22,7 @@ class _NavBarState extends State<NavBar> {
 
   final List<Widget> _pages = [
     HomePage(),
-    HomePage(),
+    CommunityHomeScreen(),
     MarketplaceHome(),
     ViewProfileScreen(),
   ];
@@ -34,8 +35,8 @@ class _NavBarState extends State<NavBar> {
         currentIndex: _selectedIndex,
         onTap: _onNavItemTapped,
         backgroundColor: const Color.fromARGB(255, 15, 15, 16),
-        selectedItemColor: Color(0xFFB71C1C),
-        unselectedItemColor: Color.fromARGB(255, 238, 178, 89),
+        selectedItemColor: Color(0xFFFC7C79),
+        unselectedItemColor: Color(0xFFEDC0F9),
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Community"),

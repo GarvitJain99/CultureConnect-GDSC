@@ -27,12 +27,11 @@ class _GeneratedContentPageState extends State<GeneratedContentPage> {
     var result =
         await _geminiService.generateResponse(widget.culture, widget.category);
 
-    print("Extracted Image URLs: ${result["images"]}"); // Debugging output
+    print("Extracted Image URLs: ${result["images"]}"); 
 
     setState(() {
       generatedContent = result["text"];
 
-      // ✅ Explicitly cast result["images"] as a List<String>
       List<dynamic> dynamicUrls = result["images"] ?? [];
       imageUrls = dynamicUrls
           .map((e) => e.toString())

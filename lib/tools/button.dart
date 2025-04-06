@@ -66,7 +66,7 @@ class CustomButton extends StatelessWidget {
                 children: [
                   if (icon != null)
                     Icon(icon, color: iconColor ?? textColor, size: iconSize),
-                  if (icon != null) const SizedBox(width: 8), // Space between icon & text
+                  if (icon != null) const SizedBox(width: 8), 
                   Text(
                     text,
                     style: TextStyle(

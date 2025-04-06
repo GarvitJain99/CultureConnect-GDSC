@@ -1,7 +1,10 @@
-import 'package:cultureconnect/pages/encyclopedia/region_selection.dart';
 import 'package:flutter/material.dart';
+import 'package:cultureconnect/pages/encyclopedia/region_selection.dart';
 import 'package:cultureconnect/tools/hor_list.dart';
 import 'package:cultureconnect/tools/button.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+
+const String geminiApiKey = 'AIzaSyAaZRuhbS9BKEPxvSBtfscmBja2EJmZB2Y';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,23 +14,54 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> cultureitems = ["Gujarat", "Rajasthan", "Sikh", "Jain"];
+  List<String> cultureitems = [
+    "Gujarat",
+    "Rajasthan",
+    "Kerala",
+    "Uttar Pradesh"
+  ];
   List<String> cultureimages = [
-    "assets/images/banner.png",
-    "assets/images/banner.png",
-    "assets/images/banner.png",
-    "assets/images/banner.png",
+    "assets/images/west/gujarat.jpg",
+    "assets/images/west/rajasthan.webp",
+    "assets/images/south/kerala.webp",
+    "assets/images/north/uttarpradesh.jpg",
   ];
-  List<Widget> culturepages = [PageOne(), PageTwo(), PageThree(), PageFour()];
 
-  List<String> festivalitems = ["Diwali", "Eid", "Holi", "Christmas"];
-  List<String> festivalimages = [
-    "assets/images/banner.png",
-    "assets/images/banner.png",
-    "assets/images/banner.png",
-    "assets/images/banner.png",
+  final List<Map<String, String>> events = [
+    {'date': 'March 14, 2025', 'name': 'Holi'},
+    {'date': 'March 30, 2025', 'name': 'Ugadi'},
+    {'date': 'March 31, 2025', 'name': 'Ramadan'},
+    {'date': 'April 6, 2025', 'name': 'Ram Navami'},
   ];
-  List<Widget> festivalpages = [PageOne(), PageTwo(), PageThree(), PageFour()];
+
+  String _funFact = "✨ Did you know? The Kumbh Mela is the world's largest peaceful gathering with millions of pilgrims attending!\n";
+  bool _isLoadingFunFact = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _generateFunFact(); 
+  }
+
+  Future<void> _generateFunFact() async {
+    setState(() {
+      _isLoadingFunFact = true;
+    });
+    try {
+      final model = GenerativeModel(model: 'gemini-2.0-flash', apiKey: geminiApiKey);
+      final prompt = 'Generate a short and interesting fun fact about one of the many cultures from all parts of India and be specifc about the culture. Do the above without any extra information and formatting such as bold text and images or points. Keep it in 15-20 words. Add some emojis if sensible to elaborate the idea';
+      final response = await model.generateContent([Content.text(prompt)]);
+      setState(() {
+        _funFact = response.text ?? "Failed to load fun fact.";
+        _isLoadingFunFact = false;
+      });
+    } catch (e) {   
+      setState(() {
+        _funFact = "Failed to load fun fact.";
+        _isLoadingFunFact = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,29 +73,26 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         decoration: BoxDecoration(
-        gradient: LinearGradient(
-  colors: [Color(0xFFB71C1C), Color(0xFFFFA726)], // Deep red to vibrant saffron
-  begin: Alignment.centerLeft,  // Start from the left
-  end: Alignment.centerRight,   // End at the right
-),
-
+          gradient: LinearGradient(
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 20), // Space for status bar
-  
-              // Custom Title Bar (Replaces AppBar)
+              SizedBox(height: 25),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "CultureConnect",
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         shadows: [
@@ -73,79 +104,49 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.notifications, color: Colors.white, size: 28),
-                      onPressed: () {},
-                    ),
                   ],
                 ),
               ),
-
-              // Search Bar
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: "Search Cultures, Festivals, or Marketplace",
-                    prefixIcon: Icon(Icons.search, color: Colors.black87),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
+                child: GestureDetector(
+                  onTap: () {
+                    _showBannerDialog(context);
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                          offset: Offset(2, 4),
+                        ),
+                      ],
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              // Banner
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  width: double.infinity,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                        offset: Offset(2, 4),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/banner.webp',
+                        fit: BoxFit.cover,
                       ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      'assets/images/banner.png',
-                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
               ),
-
               SizedBox(height: 20),
-
-              // Cultures Section
               _sectionTitle("Cultures"),
               _cardContainer(
-                horizontalScrollList(cultureitems, cultureimages, culturepages, context),
+                horizontalScrollList(cultureitems, cultureimages, context),
               ),
-
-              // Events & Festivals Section
               _sectionTitle("Upcoming Festivals"),
               _cardContainer(
-                horizontalScrollList(festivalitems, festivalimages, festivalpages, context),
+                _buildEventButtons(),
               ),
-
-              // Fun Fact
               _funFactCard(),
-
-              // Encyclopedia Button
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 20),
                 child: Center(
@@ -181,7 +182,48 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Section Title Widget
+  Widget _buildEventButtons() {
+    return Column(
+      children: events.map((event) {
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: ElevatedButton(
+            onPressed: () {
+              print('${event['name']} clicked');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white.withOpacity(0.8),
+              foregroundColor: Colors.black87,
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  event['name']!,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  event['date']!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Widget _sectionTitle(String title) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -203,21 +245,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Card Container
   Widget _cardContainer(Widget child) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0),
+          color: Colors.white.withOpacity(0.4),
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 6,
-              offset: Offset(2, 3),
-            ),
-          ],
         ),
         padding: EdgeInsets.all(8),
         child: child,
@@ -225,7 +259,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Fun Fact Card
   Widget _funFactCard() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -234,58 +267,63 @@ class _HomePageState extends State<HomePage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 5,
         child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            "✨ Did you know? The Kumbh Mela is the world's largest peaceful gathering with millions of pilgrims attending!",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            textAlign: TextAlign.center,
+          padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_isLoadingFunFact)
+                Text(
+                  _funFact,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center,
+                )
+              else
+                Text(
+                  _funFact,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center,
+                ),
+            ],
           ),
         ),
       ),
     );
   }
-}
 
-// Dummy Pages
-class PageOne extends StatelessWidget {
-  const PageOne({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _dummyPage("Page One");
+  void _showBannerDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: Colors.white,
+          title:
+              Text("Welcome to CultureConnect!", textAlign: TextAlign.center),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Discover and explore different cultures and festivals from all over the world!",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              Image.asset("assets/images/banner.webp",
+                  height: 100, fit: BoxFit.cover),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK", style: TextStyle(color: Colors.blue)),
+            ),
+          ],
+        );
+      },
+    );
   }
-}
-
-class PageTwo extends StatelessWidget {
-  const PageTwo({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _dummyPage("Page Two");
-  }
-}
-
-class PageThree extends StatelessWidget {
-  const PageThree({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _dummyPage("Page Three");
-  }
-}
-
-class PageFour extends StatelessWidget {
-  const PageFour({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _dummyPage("Page Four");
-  }
-}
-
-Widget _dummyPage(String title) {
-  return Scaffold(
-    appBar: AppBar(title: Text(title)),
-    body: Center(child: Text("Welcome to $title!")),
-  );
 }

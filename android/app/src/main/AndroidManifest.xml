@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.cultureconnect">
 
     <!-- Camera Permission -->
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -11,13 +12,19 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
 
+    <!-- Permissions for Google Maps -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <application
         android:label="CultureConnect"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:replace="android:label,android:theme">
-
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -37,6 +44,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyADcIqAOqof-mzvLPzQKr3YIBZx3UMVIuE"/>
 
         <!-- Don't delete this meta-data -->
         <meta-data

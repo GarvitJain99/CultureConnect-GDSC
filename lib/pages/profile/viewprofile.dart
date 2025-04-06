@@ -39,8 +39,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
           await _firestore.collection('users').doc(user.uid).get();
 
       if (userDoc.exists) {
-        Map<String, dynamic> userData =
-            userDoc.data() as Map<String, dynamic>;
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
 
         setState(() {
           name = userData['name'] ?? '';
@@ -71,7 +70,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFB71C1C), Color(0xFFFFA726)], // Deep Red to Saffron
+            colors: [Color(0xFFFC7C79), Color(0xFFEDC0F9)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -79,9 +78,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // *Top Bar with Logout*
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -107,14 +106,14 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
 
               Expanded(
                 child: isLoading
-                    ? const Center(child: CircularProgressIndicator(color: Colors.white))
+                    ? const Center(
+                        child: CircularProgressIndicator(color: Colors.white))
                     : SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // *Profile Picture with Shadow*
                               Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -131,24 +130,24 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                                   radius: 60,
                                   backgroundImage: profileImage.isNotEmpty
                                       ? NetworkImage(profileImage)
-                                      : const AssetImage('assets/default_profile.png')
+                                      : const AssetImage(
+                                              'assets/images/default_profile.jpg')
                                           as ImageProvider,
                                 ),
                               ),
 
                               const SizedBox(height: 20),
 
-                              // *Profile Details Card*
                               _buildProfileCard(),
 
                               const SizedBox(height: 20),
 
-                              // *Edit Profile Button*
                               ElevatedButton(
                                 onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const EditProfileScreen(),
+                                    builder: (context) =>
+                                        const EditProfileScreen(),
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
@@ -183,7 +182,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2), // Glassmorphism effect
+        color: Colors.white.withOpacity(0.2), 
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -235,6 +234,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
           Divider(color: Colors.white.withOpacity(0.5), thickness: 1),
         ],
       ),
-     );
-   }
+    );
+  }
 }

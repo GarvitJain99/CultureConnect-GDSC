@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^3.12.1
   firebase_auth: ^5.5.1
-  google_sign_in: ^6.3.0
   cloud_firestore: ^5.6.5
   image_picker: ^1.1.2
   firebase_storage: ^12.4.4
@@ -47,11 +46,23 @@ dependencies:
   flutter_markdown: ^0.7.6+2
   url_launcher: ^6.3.1
   razorpay_flutter: ^1.4.0
+  google_maps_flutter: ^2.10.1
+  geolocator: ^13.0.2
+  google_places_flutter: ^2.1.0
+  geocoding: ^3.0.0
+  syncfusion_flutter_sliders: ^28.2.12
+  intl: ^0.20.2
+  zxcvbn: ^1.0.0
+  google_generative_ai: ^0.4.6
+  googleapis: ^14.0.0
+  googleapis_auth: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.14.3 
+  intl_utils: ^2.8.10
+  
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -78,6 +89,7 @@ flutter:
     - assets/images/east/
     - assets/images/west/
     - assets/images/south/
+    - assets/credentials/credentials.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -109,3 +121,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true 
+  ios: true
+  image_path: "assets/images/logo.png"
