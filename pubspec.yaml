@@ -36,7 +36,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^3.12.1
   firebase_auth: ^5.5.1
-  google_sign_in: ^6.3.0
   cloud_firestore: ^5.6.5
   image_picker: ^1.1.2
   firebase_storage: ^12.4.4
@@ -126,4 +125,4 @@ flutter:
 flutter_launcher_icons:
   android: true 
   ios: true
-  image_path: "assets/images/logo.jpeg"
+  image_path: "assets/images/logo.png"

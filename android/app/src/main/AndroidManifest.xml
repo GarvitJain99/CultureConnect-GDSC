@@ -21,7 +21,7 @@
     <application
         android:label="CultureConnect"
         android:name="${applicationName}"
-        android:icon="@mipmap/logo"
+        android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:replace="android:label,android:theme">
         
